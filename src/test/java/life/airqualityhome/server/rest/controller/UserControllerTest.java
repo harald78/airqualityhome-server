@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
-public class UserController {
+public class UserControllerTest {
 
     @PostMapping("/login")
     public String loginUser() {
