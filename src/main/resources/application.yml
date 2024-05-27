@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: airqualityhome-server
+  datasource:
+    url: jdbc:mariadb:<url>
+    username: ${mariaDB_user}
+    password: ${mariaDB_user_password}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "prometheus" ]
