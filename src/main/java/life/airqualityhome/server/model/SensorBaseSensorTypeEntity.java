@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class SensorBaseSensorTypeEntity {
+public class SensorBaseSensorTypeEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,10 +16,4 @@ public class SensorBaseSensorTypeEntity {
     @ManyToOne
     @JoinColumn(name = "sensor_type_id", nullable = false)
     private SensorTypeEntity sensorType;
-
-    @Column(nullable = false)
-    private Instant created;
-
-    @Column(nullable = false)
-    private Instant updated;
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class NotitficationEntity {
+public class NotitficationEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,9 +23,4 @@ public class NotitficationEntity {
 
     private Instant readAt;
 
-    @Column(nullable = false)
-    private Instant created;
-
-    @Column(nullable = false)
-    private Instant updated;
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class MeasurementEntity {
+public class MeasurementEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,10 +22,4 @@ public class MeasurementEntity {
 
     @Column(nullable = false)
     private Double value;
-
-    @Column(nullable = false)
-    private Instant created;
-
-    @Column(nullable = false)
-    private Instant updated;
 }

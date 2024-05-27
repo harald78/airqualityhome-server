@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class RegisterRequestEntity {
+public class RegisterRequestEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,9 +19,4 @@ public class RegisterRequestEntity {
 
     private Boolean active;
 
-    @Column(nullable = false)
-    private Instant created;
-
-    @Column(nullable = false)
-    private Instant updated;
 }

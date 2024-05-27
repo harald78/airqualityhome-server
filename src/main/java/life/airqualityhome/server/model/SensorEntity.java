@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-public class SensorEntity  {
+public class SensorEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,10 +26,4 @@ public class SensorEntity  {
     private Double alarmMax;
 
     private Double alarmMin;
-
-    @Column(nullable = false)
-    private Instant created;
-
-    @Column(nullable = false)
-    private Instant updated;
 }
