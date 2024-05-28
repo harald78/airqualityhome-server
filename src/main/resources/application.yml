@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: airqualityhome-server
+
+  datasource:
+    url: jdbc:mariadb:localhost:3606/airqualityhome
+    username: ${mariaDB_user}
+    password: ${mariaDB_user_password}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+airqualityhome:
+  name: "Test"
+  jwt-secret: ${jwt_secret}
