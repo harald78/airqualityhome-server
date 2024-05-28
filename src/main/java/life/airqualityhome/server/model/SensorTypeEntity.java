@@ -16,6 +16,10 @@ public class SensorTypeEntity extends BaseEntity {
         TEMPERATURE, HUMIDITY, PRESSURE, GAS, PARTICLE, LIGHT;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Type type;
+
     @Column(nullable = false)
     private Double maxValue;
 
