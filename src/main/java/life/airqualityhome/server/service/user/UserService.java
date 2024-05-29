@@ -12,6 +12,8 @@ public interface UserService {
 
     UserResponseDto getUser();
 
+    UserResponseDto logoutUser();
+
     List<UserResponseDto> getAllUser();
 
 

@@ -1,5 +1,6 @@
 package life.airqualityhome.server.rest.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import life.airqualityhome.server.model.RefreshTokenEntity;
 import life.airqualityhome.server.rest.dto.*;
 import life.airqualityhome.server.service.jwt.JwtService;
@@ -53,10 +54,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/profile")
+    @GetMapping("/profile")
     public ResponseEntity<UserResponseDto> getUserProfile() {
         try {
             UserResponseDto userResponse = userService.getUser();
+            return ResponseEntity.ok().body(userResponse);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<UserResponseDto> logoutUser() {
+        try {
+            UserResponseDto userResponse = userService.logoutUser();
             return ResponseEntity.ok().body(userResponse);
         } catch (Exception e){
             throw new RuntimeException(e);
@@ -98,5 +109,10 @@ public class UserController {
                             .accessToken(accessToken)
                             .token(refreshTokenRequestDTO.getToken()).build();
                 }).orElseThrow(() ->new RuntimeException("Refresh Token is not in DB..!!"));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleException(ExpiredJwtException e){
+        return ResponseEntity.status(401).build();
     }
 }

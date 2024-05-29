@@ -16,3 +16,4 @@ spring:
 airqualityhome:
   name: "Test"
   jwt-secret: ${jwt_secret}
+  token-expire-millis: 300000 # 5 Minutes

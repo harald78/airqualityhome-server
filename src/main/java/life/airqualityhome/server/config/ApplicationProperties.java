@@ -16,4 +16,6 @@ public class ApplicationProperties {
     private String name;
 
     private String jwtSecret;
+
+    private String tokenExpireMillis;
 }
