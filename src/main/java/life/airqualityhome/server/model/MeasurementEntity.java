@@ -20,6 +20,10 @@ public class MeasurementEntity extends BaseEntity {
         CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PPM;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Unit unit;
+
     @Column(nullable = false)
     private Double value;
 }
