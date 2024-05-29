@@ -1,7 +1,9 @@
 package life.airqualityhome.server.service.user;
 
+import life.airqualityhome.server.model.RefreshTokenEntity;
 import life.airqualityhome.server.model.UserEntity;
 import life.airqualityhome.server.model.mapper.UserEntityMapper;
+import life.airqualityhome.server.repositories.RefreshTokenRepository;
 import life.airqualityhome.server.repositories.UserRepository;
 import life.airqualityhome.server.rest.dto.UserRequestDto;
 import life.airqualityhome.server.rest.dto.UserResponseDto;
@@ -13,12 +15,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     UserEntityMapper userEntityMapper;
@@ -33,12 +39,11 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Parameter password is not found in request..!!");
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
+        String usernameFromAccessToken = userDetail.getUsername();
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
-//        String usernameFromAccessToken = userDetail.getUsername();
-//
-//        UserInfo currentUser = userRepository.findByUsername(usernameFromAccessToken);
+        UserEntity currentUser = userRepository.findByUsername(usernameFromAccessToken);
 
         UserEntity savedUser = null;
 
@@ -78,6 +83,17 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByUsername(usernameFromAccessToken);
         UserResponseDto userResponse = userEntityMapper.toResponseDto(user);
         return userResponse;
+    }
+
+    @Override
+    public UserResponseDto logoutUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
+        String usernameFromAccessToken = userDetail.getUsername();
+        UserEntity user = userRepository.findByUsername(usernameFromAccessToken);
+        Optional<List<RefreshTokenEntity>> tokenList = refreshTokenRepository.findAllByUserInfo(user);
+        tokenList.ifPresent(refreshTokenEntities -> refreshTokenRepository.deleteAll(refreshTokenEntities));
+        return userEntityMapper.toResponseDto(user);
     }
 
     @Override
