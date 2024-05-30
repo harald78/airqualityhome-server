@@ -6,20 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SensorTypeDto implements Serializable {
-
-    private Long id;
-
+public class SensorBaseDto implements Serializable {
+    private String id;
     private String name;
-
-    private String type;
-
-    private Double maxValue;
-
-    private Double minValue;
+    private Set<SensorTypeDto> sensorTypes;
 }

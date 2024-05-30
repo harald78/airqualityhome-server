@@ -1,7 +1,7 @@
 package life.airqualityhome.server.rest.dto.mapper;
 
-import life.airqualityhome.server.model.SensorTypeEntity;
-import life.airqualityhome.server.rest.dto.SensorTypeDto;
+import life.airqualityhome.server.model.SensorBaseEntity;
+import life.airqualityhome.server.rest.dto.SensorBaseDto;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring",
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 @Component
-public interface SensorTypeMapper {
-
-    SensorTypeDto toDto(SensorTypeEntity sensorTypeEntity);
+public interface SensorBaseMapper {
+    SensorBaseDto toDto(SensorBaseEntity sensorBase);
 }
-

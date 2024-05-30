@@ -1,0 +1,26 @@
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+    url: "jdbc:h2:mem:airqualityhome;MODE=MariaDB;DB_CLOSE_DELAY=-1"
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        hibernate:
+          dialect: org.hibernate.dialect.H2Dialect
+        default_schema: airqualityhome
+
+  sql:
+    init:
+     mode: embedded
+logging:
+  level:
+    org:
+      flywaydb: DEBUG
+      hibernate: INFO
