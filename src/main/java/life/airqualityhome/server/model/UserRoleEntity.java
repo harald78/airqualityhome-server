@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "role")
+@Table(name = "aq_role")
 public class UserRoleEntity extends BaseEntity {
 
     @Id

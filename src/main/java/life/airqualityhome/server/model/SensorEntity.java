@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Table(name="sensor")
 public class SensorEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
