@@ -1,8 +1,15 @@
 package life.airqualityhome.server.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.Instant;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class MeasurementEntity extends BaseEntity {
     @Id
@@ -16,7 +23,7 @@ public class MeasurementEntity extends BaseEntity {
     @Column(nullable = false)
     private Instant timestamp;
 
-    private enum Unit {
+    public enum Unit {
         CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PPM;
     }
 

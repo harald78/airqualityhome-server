@@ -1,8 +1,15 @@
 package life.airqualityhome.server.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.Instant;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class SensorTypeEntity extends BaseEntity {
     @Id

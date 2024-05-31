@@ -1,6 +1,7 @@
 package life.airqualityhome.server.repositories;
 
 import life.airqualityhome.server.model.MeasurementEntity;
+import life.airqualityhome.server.model.SensorEntity;
 import life.airqualityhome.server.repositories.helper.RefreshableCRUDRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,4 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface MeasurementRepository extends RefreshableCRUDRepository<MeasurementEntity, Long> {
 
     MeasurementEntity findFirstById(Long id);
+    MeasurementEntity findTopBySensorEntityOrderByTimestampDesc(SensorEntity sensorEntity);
+
 }
+
