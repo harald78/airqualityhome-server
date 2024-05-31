@@ -64,7 +64,6 @@ public class RegistrationControllerIT {
                         sensorType2
                 )).build();
         sensorBaseRepository.save(sensorBase);
-
     }
 
     @Test
