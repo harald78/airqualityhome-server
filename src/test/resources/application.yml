@@ -24,3 +24,6 @@ logging:
     org:
       flywaydb: DEBUG
       hibernate: INFO
+
+server:
+  port: 8080

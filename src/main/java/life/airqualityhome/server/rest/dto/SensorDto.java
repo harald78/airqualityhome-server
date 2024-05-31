@@ -5,23 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDto implements Serializable {
-
-    private Long id;
-
+public class SensorDto {
+    private long id;
+    private String uuid;
+    private Long sensorBaseSensorTypeId;
     private Long userId;
-
-    private Long sensorBaseId;
-
-    private Boolean active;
-
-    private Boolean canceled;
-
     private String location;
+    private double alarmMax;
+    private double alarmMin;
+    private boolean alarmActive;
 }
