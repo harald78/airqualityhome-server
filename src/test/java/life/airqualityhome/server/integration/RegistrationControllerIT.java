@@ -81,13 +81,13 @@ public class RegistrationControllerIT {
         this.setupRegisterRequestDB_forUserQuery();
 
         // when
-        var result = restTemplate.getForEntity("http://localhost:8080/api/register/requests/" + 2L, RegisterRequestDto[].class);
+        var result = restTemplate.getForEntity("http://localhost:8080/api/register/requests/" + 2L, RegisterRequestDto.class);
 
         // then
         assertNotNull(result);
         assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().length);
-        assertEquals(2L, result.getBody()[0].getUserId());
+        assertEquals("Sleeping room", result.getBody().getLocation());
+        assertEquals(2L, result.getBody().getUserId());
     }
 
     @Test

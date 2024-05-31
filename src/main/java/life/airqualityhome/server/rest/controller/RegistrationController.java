@@ -40,8 +40,11 @@ public class RegistrationController {
 
     @PreAuthorize("hasAuthority('APP_READ')")
     @GetMapping("/requests/{id}")
-    public ResponseEntity<List<RegisterRequestDto>> getRegisterRequestByUserId(@PathVariable String id) {
-        List<RegisterRequestDto> sensorRegistrationsByUser = registrationService.getRegisterRequestByUserId(Long.parseLong(id));
+    public ResponseEntity<RegisterRequestDto> getRegisterRequestByUserId(@PathVariable String id) {
+        RegisterRequestDto sensorRegistrationsByUser = registrationService.getRegisterRequestByUserId(Long.parseLong(id));
+        if (sensorRegistrationsByUser.getId() == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(sensorRegistrationsByUser, HttpStatus.OK);
     }
 

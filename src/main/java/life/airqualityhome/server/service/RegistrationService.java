@@ -57,9 +57,9 @@ public class RegistrationService {
                 .toList();
     }
 
-    public List<RegisterRequestDto> getRegisterRequestByUserId(Long userId) {
-        Optional<List<RegisterRequestEntity>> entityList = registerRequestRepository.findAllByUserId(userId);
-        return entityList.map(registerRequestEntities -> registerRequestEntities.stream().map(registerRequestMapper::toDto).toList()).orElseGet(ArrayList::new);
+    public RegisterRequestDto getRegisterRequestByUserId(Long userId) {
+        Optional<RegisterRequestEntity> entityList = registerRequestRepository.findByUserIdAndActiveTrue(userId);
+        return entityList.map(registerRequestMapper::toDto).orElse(RegisterRequestDto.builder().build());
     }
 
     public RegisterRequestDto cancelRegisterRequest(RegisterRequestDto registerRequest) {

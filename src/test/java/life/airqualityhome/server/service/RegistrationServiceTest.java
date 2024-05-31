@@ -280,9 +280,8 @@ class RegistrationServiceTest {
 
         // then
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(RegisterRequestDto.class, result.get(0).getClass());
-        verify(registerRequestRepository, times(1)).findAllByUserId(1L);
+        assertEquals(RegisterRequestDto.class, result.getClass());
+        verify(registerRequestRepository, times(1)).findByUserIdAndActiveTrue(1L);
     }
 
     @Test
@@ -296,8 +295,8 @@ class RegistrationServiceTest {
 
         // then
         assertNotNull(result);
-        assertEquals(0, result.size());
-        verify(registerRequestRepository, times(1)).findAllByUserId(1L);
+        assertNull(result.getId());
+        verify(registerRequestRepository, times(1)).findByUserIdAndActiveTrue(1L);
     }
 
     @Test
