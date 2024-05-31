@@ -14,10 +14,18 @@ public class SensorBaseSensorTypeEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "sensor_base_entity_id", nullable = false)
+    @Column(name = "sensor_base_id", nullable = false)
     private Long sensorBaseId;
 
 
-    @JoinColumn(name = "sensor_types_id", nullable = false)
+    @Column(name = "sensor_type_id", nullable = false)
     private Long sensorTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "sensor_base_id", insertable = false, updatable = false)
+    private SensorBaseEntity sensorBase;
+
+    @ManyToOne
+    @JoinColumn(name = "sensor_type_id", insertable = false, updatable = false)
+    private SensorTypeEntity sensorType;
 }
