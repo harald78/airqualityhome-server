@@ -6,10 +6,8 @@ import life.airqualityhome.server.rest.dto.*;
 import life.airqualityhome.server.service.jwt.JwtService;
 import life.airqualityhome.server.service.jwt.RefreshTokenService;
 import life.airqualityhome.server.service.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,18 +19,22 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    @Autowired
-    RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
+
+    private final AuthenticationManager authenticationManager;
+
+    public UserController(UserService userService, JwtService jwtService, RefreshTokenService refreshTokenService, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
+        this.authenticationManager = authenticationManager;
+    }
 
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @PostMapping(value = "/save")
     public ResponseEntity saveUser(@RequestBody UserRequestDto userRequest) {
@@ -69,16 +71,6 @@ public class UserController {
         try {
             UserResponseDto userResponse = userService.logoutUser();
             return ResponseEntity.ok().body(userResponse);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    @PreAuthorize("hasAuthority('APP_WRITE')")
-    @GetMapping("/test")
-    public String test() {
-        try {
-            return "Welcome";
         } catch (Exception e){
             throw new RuntimeException(e);
         }

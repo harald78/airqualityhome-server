@@ -76,14 +76,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUser() {
+    public UserEntity getUserEntity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetail = (UserDetails) authentication.getPrincipal();
         String usernameFromAccessToken = userDetail.getUsername();
-        UserEntity user = userRepository.findByUsername(usernameFromAccessToken);
+        return userRepository.findByUsername(usernameFromAccessToken);
+    }
+
+    @Override
+    public UserResponseDto getUser() {
+        UserEntity user = getUserEntity();
         UserResponseDto userResponse = userEntityMapper.toResponseDto(user);
         return userResponse;
     }
+
+
+    @Override
+    public UserResponseDto getUserByUserName(String username) {
+        UserEntity user = userRepository.findByUsername(username);
+        return userEntityMapper.toResponseDto(user);
+    }
+
 
     @Override
     public UserResponseDto logoutUser() {
