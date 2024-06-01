@@ -1,10 +1,19 @@
 package life.airqualityhome.server.rest.controller;
 
 import org.springframework.web.bind.annotation.*;
+import life.airqualityhome.server.service.notifications.NotificationService;
+import life.airqualityhome.server.rest.dto.NotificationDto;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationsController {
+
+    @Autowired
+    private NotificationService service;
 
     @PostMapping("/read/{id}")
     public String readNotification() {
@@ -12,8 +21,8 @@ public class NotificationsController {
     }
 
     @GetMapping("/user/{id}")
-    public String getUserNotifications() {
-        return "Hello Notifications";
+    public List<NotificationDto> getUserNotifications(@PathVariable Long id) {
+        return service.getAllUserNotifications(id);
     }
 
     @DeleteMapping("/user/{id}")
