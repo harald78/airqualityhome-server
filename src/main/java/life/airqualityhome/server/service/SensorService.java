@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 @Slf4j
@@ -30,18 +31,23 @@ public class SensorService {
         this.sensorMapper = sensorMapper;
     }
 
-    public List<SensorDto> getAllSensorsByUUID(String uuid) {
+    public List<SensorDto> getAllSensorsByUUID(String sensorId) {
+        UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
         Optional<List<SensorEntity>> sensorList = sensorRepository.findByUuid(uuid);
         return sensorList.map(l -> l.stream().map(sensorMapper::toDto).toList()).orElse(new ArrayList<>());
     }
 
-    public List<SensorDto> registerSensorsForUser(RegisterRequestEntity registrationRequest, Long userId, String uuid) {
+    public List<SensorDto> registerSensorsForUser(RegisterRequestEntity registrationRequest, Long userId, String sensorId) {
         // Lade SensorBase with SensorTypes
         List<Long> sensorIds = registrationRequest.getSensorBase().getSensorTypes()
                 .stream().map(SensorTypeEntity::getId).toList();
         List<SensorBaseSensorTypeEntity> sensorBaseSensorTypeRelations =
                 sensorBaseSensorTypeRepository.findAllBySensorBaseIdAndSensorTypeIdIn(registrationRequest.getSensorBase().getId(), sensorIds);
         List<SensorEntity> sensorEntities = new ArrayList<>();
+
+        UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
+
+
         for (SensorBaseSensorTypeEntity sensorBaseSensorTypeEntity : sensorBaseSensorTypeRelations) {
             var sensor = SensorEntity.builder()
                     .sensorBaseSensorTypeId(sensorBaseSensorTypeEntity.getId())

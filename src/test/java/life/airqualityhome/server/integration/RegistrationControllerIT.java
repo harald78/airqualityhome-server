@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -133,11 +134,12 @@ public class RegistrationControllerIT {
     @DirtiesContext
     public void testConfirmSensorRegistration_HTTP_OK_SensorAlreadyRegistered() {
         this.setupUserForTest();
+        this.setupSensorBaseSensorTypeRelations();
         this.setupSensorsForTest();
 
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUserName("user1");
-        registerConfirmation.setUuid("F0F0F0");
+        registerConfirmation.setSensorId("F0F0F0");
 
         var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
 
@@ -151,11 +153,12 @@ public class RegistrationControllerIT {
     @DirtiesContext
     public void testConfirmSensorRegistration_HTTP_BAD_REQUEST_SensorAlreadyRegistered() throws Exception {
         this.setupUserForTest();
+        this.setupSensorBaseSensorTypeRelations();
         this.setupSensorsForTest();
 
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUserName("user1");
-        registerConfirmation.setUuid("F0F0F3");
+        registerConfirmation.setSensorId("F0F0F3");
 
         var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class));
 
@@ -169,16 +172,16 @@ public class RegistrationControllerIT {
     public void testConfirmSensorRegistration_HTTP_OK_SensorsRegistered() throws Exception {
         this.setupUserForTest();
         this.setupRegisterRequestDB_forUserQuery();
-        this.setupSensorsForTest();
         this.setupSensorBaseSensorTypeRelations();
+        this.setupSensorsForTest();
 
+        UUID uuid = UUID.nameUUIDFromBytes("F0F0F3".getBytes());
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUserName("user2");
-        registerConfirmation.setUuid("F0F0F3");
+        registerConfirmation.setSensorId("F0F0F3");
 
         var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
-
-        Optional<List<SensorEntity>> registeredSensors = sensorRepository.findByUuid("F0F0F3");
+        Optional<List<SensorEntity>> registeredSensors = sensorRepository.findByUuid(uuid);
 
         assertNotNull(result);
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -239,12 +242,14 @@ public class RegistrationControllerIT {
 
     private void setupSensorBaseSensorTypeRelations() {
         final var sensorBaseSensorType1 = SensorBaseSensorTypeEntity.builder()
-                .sensorTypeId(1L)
-                .sensorBaseId(1L)
+                .id(1L)
+                .sensorTypesId(1L)
+                .sensorBaseEntityId(1L)
                 .build();
         final var sensorBaseSensorType2 = SensorBaseSensorTypeEntity.builder()
-                .sensorTypeId(2L)
-                .sensorBaseId(1L)
+                .id(2L)
+                .sensorTypesId(2L)
+                .sensorBaseEntityId(1L)
                 .build();
         sensorBaseSensorTypeRepository.saveAll(List.of(sensorBaseSensorType1, sensorBaseSensorType2));
     }
@@ -283,41 +288,48 @@ public class RegistrationControllerIT {
     }
 
     private void setupSensorsForTest(){
+        UUID uuid1 = UUID.nameUUIDFromBytes("F0F0F0".getBytes());
+        UUID uuid2 = UUID.nameUUIDFromBytes("F0F0F1".getBytes());
+        var sensorBaseSensorTypes = sensorBaseSensorTypeRepository.findAll();
         SensorEntity sensorEntity1 = SensorEntity.builder()
+                .id(1L)
                 .sensorBaseSensorTypeId(1L)
                 .userId(1L)
                 .location("Living room")
                 .alarmMin(0.0)
                 .alarmMax(0.0)
                 .alarmActive(false)
-                .uuid("F0F0F0")
+                .uuid(uuid1)
                 .build();
         SensorEntity sensorEntity2 = SensorEntity.builder()
+                .id(2L)
                 .sensorBaseSensorTypeId(2L)
                 .userId(1L)
                 .location("Living room")
                 .alarmMin(0.0)
                 .alarmMax(0.0)
                 .alarmActive(false)
-                .uuid("F0F0F0")
+                .uuid(uuid1)
                 .build();
         SensorEntity sensorEntity3 = SensorEntity.builder()
+                .id(3L)
                 .sensorBaseSensorTypeId(1L)
                 .userId(2L)
                 .location("Bath room")
                 .alarmMin(0.0)
                 .alarmMax(0.0)
                 .alarmActive(false)
-                .uuid("F0F0F1")
+                .uuid(uuid2)
                 .build();
         SensorEntity sensorEntity4 = SensorEntity.builder()
+                .id(4L)
                 .sensorBaseSensorTypeId(2L)
                 .userId(2L)
                 .location("Bath room")
                 .alarmMin(0.0)
                 .alarmMax(0.0)
                 .alarmActive(false)
-                .uuid("F0F0F1")
+                .uuid(uuid2)
                 .build();
         sensorRepository.saveAll(List.of(sensorEntity1, sensorEntity2, sensorEntity3, sensorEntity4));
     }
