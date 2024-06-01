@@ -1,4 +1,4 @@
-use airqualityhome;
+USE airqualityhome;
 
-RENAME TABLE IF EXISTS airqualityhome.user_user_role
-    TO airqualityhome.user_roles;
+ALTER TABLE IF EXISTS airqualityhome.user_user_role RENAME
+    TO airqualityhome.aq_user_roles;

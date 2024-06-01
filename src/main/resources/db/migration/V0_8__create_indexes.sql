@@ -1,6 +1,6 @@
 USE airqualityhome;
 
-CREATE INDEX IF NOT EXISTS idx_email ON airqualityhome.user(email);
+CREATE INDEX IF NOT EXISTS idx_email ON airqualityhome.aq_user(email);
 CREATE INDEX IF NOT EXISTS idx_sensor_base_name ON airqualityhome.sensor_base(name);
 CREATE INDEX IF NOT EXISTS idx_sensor_type_type ON airqualityhome.sensor_type(type);
 CREATE INDEX IF NOT EXISTS idx_sensor_type_name ON airqualityhome.sensor_type(name);

@@ -4,6 +4,7 @@ import life.airqualityhome.server.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,11 +15,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -44,6 +43,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Profile({"prod", "local"})
     public SecurityFilterChain securityFilter(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -64,6 +64,7 @@ public class SecurityConfig {
 
     @Order(1)
     @Bean
+    @Profile({"prod", "local"})
     public SecurityFilterChain securityFilterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -76,11 +77,23 @@ public class SecurityConfig {
                                 mvc.pattern( "/swagger-ui.html"))
                         .permitAll())
                 .authorizeHttpRequests((exchange) ->
-                    exchange.requestMatchers("/api/user/save", "/api/user/login", "/api/user/logout",  "/api/user/refreshToken").permitAll())
+                    exchange.requestMatchers("/api/user/save", "/api/user/login", "/api/user/logout",  "/api/user/refreshToken", "/api/register/sensor/confirm").permitAll())
                 .authorizeHttpRequests((exchange) ->
                         exchange.requestMatchers("/api/**").authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Order(2)
+    @Bean
+    @Profile({"test"})
+    public SecurityFilterChain testSecurityFilter(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests((exchange) -> exchange.anyRequest().permitAll())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

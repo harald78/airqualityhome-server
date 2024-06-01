@@ -1,6 +1,17 @@
 package life.airqualityhome.server.rest.dto;
 
-public class RegisterRequestDto {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterRequestDto implements Serializable {
 
     private Long id;
 
@@ -9,4 +20,8 @@ public class RegisterRequestDto {
     private Long sensorBaseId;
 
     private Boolean active;
+
+    private Boolean canceled;
+
+    private String location;
 }
