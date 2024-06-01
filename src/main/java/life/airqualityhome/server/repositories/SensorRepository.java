@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface SensorRepository extends RefreshableCRUDRepository<SensorEntity, Long> {
 
-    Optional<List<SensorEntity>> findByUuid(String uuid);
+    Optional<List<SensorEntity>> findByUuid(UUID uuid);
     SensorEntity findFirstById(Long id);
 }

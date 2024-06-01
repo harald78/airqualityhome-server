@@ -304,7 +304,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUserName("any-username");
-        registerConfirmationDto.setUuid("F0F0F0");
+        registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of(
                 SensorDto.builder().sensorBaseSensorTypeId(1L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build(),
                 SensorDto.builder().sensorBaseSensorTypeId(2L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build()
@@ -329,7 +329,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUserName("any-username");
-        registerConfirmationDto.setUuid("F0F0F0");
+        registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
 
         // when
@@ -351,7 +351,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUserName("any-username");
-        registerConfirmationDto.setUuid("F0F0F0");
+        registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
                 .userId(1L).sensorBase(SensorBaseEntity.builder()
@@ -401,12 +401,22 @@ class RegistrationServiceTest {
         when(sensorService.getAllSensorsByUUID("F0F0F0")).thenReturn(sensorList);
         when(registerRequestRepository.findByUserIdAndActiveTrue(anyLong())).thenReturn(Optional.of(registerRequestEntity));
         when(sensorService.registerSensorsForUser(any(RegisterRequestEntity.class), anyLong(), anyString())).thenReturn(sensorDtoList);
+        when(registerRequestRepository.save(any(RegisterRequestEntity.class))).thenAnswer(new Answer<RegisterRequestEntity>() {
+            @Override
+            public RegisterRequestEntity answer(InvocationOnMock invocationOnMock) throws Throwable {
+                var entity = (RegisterRequestEntity) invocationOnMock.getArgument(0);
+                assertFalse(entity.getActive());
+                return entity;
+            }
+        });
+
         var result = sut.confirmSensorRegistration(registerConfirmationDto);
 
         // then
         assertNotNull(result);
         assertEquals("OK", result);
         verify(sensorService, times(1)).registerSensorsForUser(any(RegisterRequestEntity.class), anyLong(), anyString());
+        verify(registerRequestRepository, times(1)).save(registerRequestEntity);
     }
 
     @Test
@@ -414,7 +424,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUserName("any-username");
-        registerConfirmationDto.setUuid("F0F0F0");
+        registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
                 .userId(1L).sensorBase(SensorBaseEntity.builder()

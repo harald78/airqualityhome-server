@@ -3,6 +3,8 @@ package life.airqualityhome.server.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Builder
 @Getter
@@ -16,11 +18,11 @@ public class SensorEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String uuid;
+    private UUID uuid;
 
-//    @ManyToOne
-//    @JoinColumn(name = "sensor_base_sensor_type_id", insertable = false, updatable = false)
-//    private SensorBaseSensorTypeEntity sensorBaseSensorType;
+    @ManyToOne
+    @JoinColumn(name = "sensor_base_sensor_type_id", insertable = false, updatable = false)
+    private SensorBaseSensorTypeEntity sensorBaseSensorType;
 
     @Column(name = "sensor_base_sensor_type_id", nullable = false)
     private Long sensorBaseSensorTypeId;

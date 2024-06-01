@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import java.util.UUID;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class SensorServiceTest {
         String uuid = "F0F0F0";
 
         // when
-        when(sensorRepository.findByUuid(anyString())).thenReturn(Optional.empty());
+        when(sensorRepository.findByUuid(any(UUID.class))).thenReturn(Optional.empty());
         var result = sut.getAllSensorsByUUID(uuid);
 
         // then
@@ -65,7 +66,7 @@ public class SensorServiceTest {
         );
 
         // when
-        when(sensorRepository.findByUuid(anyString())).thenReturn(Optional.of(sensorEntities));
+        when(sensorRepository.findByUuid(any(UUID.class))).thenReturn(Optional.of(sensorEntities));
         var result = sut.getAllSensorsByUUID(uuid);
 
         // then
@@ -98,8 +99,8 @@ public class SensorServiceTest {
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
                 .userId(1L).sensorBase(sensorBase).location("Living room").active(true).build();
         List<SensorBaseSensorTypeEntity> sensorBaseSensorTypeRelations = List.of(
-                SensorBaseSensorTypeEntity.builder().id(1L).sensorBaseId(sensorBase.getId()).sensorTypeId(sensorType1.getId()).build(),
-                SensorBaseSensorTypeEntity.builder().id(2L).sensorBaseId(sensorBase.getId()).sensorTypeId(sensorType2.getId()).build());
+                SensorBaseSensorTypeEntity.builder().id(1L).sensorBaseEntityId(sensorBase.getId()).sensorTypesId(sensorType1.getId()).build(),
+                SensorBaseSensorTypeEntity.builder().id(2L).sensorBaseEntityId(sensorBase.getId()).sensorTypesId(sensorType2.getId()).build());
 
         // when
         when(sensorBaseSensorTypeRepository.findAllBySensorBaseIdAndSensorTypeIdIn(anyLong(), anyList())).thenReturn(sensorBaseSensorTypeRelations);
