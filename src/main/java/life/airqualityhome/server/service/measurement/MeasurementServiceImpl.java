@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class MeasurementServiceManager implements MeasurementService {
+public class MeasurementServiceImpl implements MeasurementService {
 
 
     private final SensorRepository sensorRepository;
@@ -19,7 +19,7 @@ public class MeasurementServiceManager implements MeasurementService {
 
     private final MeasurementRepository measurementRepository;
 
-    public MeasurementServiceManager(SensorRepository sensorRepository, MeasurementRepository measurementRepository) {
+    public MeasurementServiceImpl(SensorRepository sensorRepository, MeasurementRepository measurementRepository) {
         this.sensorRepository = sensorRepository;
         this.measurementRepository = measurementRepository;
 

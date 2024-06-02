@@ -24,18 +24,18 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MeasurementServiceManagerTest {
+class MeasurementServiceImplTest {
     @Mock
     private SensorRepository sensorRepository;
 
     @Mock
     private MeasurementRepository measurementRepository;
-    private MeasurementServiceManager sut;
+    private MeasurementServiceImpl sut;
 
 
     @BeforeEach
     void setUp() {
-        this.sut = new MeasurementServiceManager(sensorRepository, measurementRepository);
+        this.sut = new MeasurementServiceImpl(sensorRepository, measurementRepository);
     }
 
     @Test
