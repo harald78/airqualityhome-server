@@ -5,7 +5,6 @@ import life.airqualityhome.server.model.SensorEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
 import life.airqualityhome.server.repositories.SensorRepository;
 import life.airqualityhome.server.rest.dto.SensorMeasurementDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,17 @@ import java.util.stream.Collectors;
 @Service
 public class MeasurementServiceManager implements MeasurementService {
 
-    @Autowired
-    private SensorRepository sensorRepository;
 
-    @Autowired
-    private MeasurementRepository measurementRepository;
+    private final SensorRepository sensorRepository;
+
+
+    private final MeasurementRepository measurementRepository;
+
+    public MeasurementServiceManager(SensorRepository sensorRepository, MeasurementRepository measurementRepository) {
+        this.sensorRepository = sensorRepository;
+        this.measurementRepository = measurementRepository;
+
+    }
 
     @Override
     public List<SensorMeasurementDto> getUserMeasurements(String userId) {
