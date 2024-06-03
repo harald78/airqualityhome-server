@@ -3,6 +3,8 @@ package life.airqualityhome.server.rest.controller;
 import life.airqualityhome.server.rest.dto.SensorMeasurementDto;
 import life.airqualityhome.server.service.measurement.MeasurementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +26,9 @@ public class MeasurementsController {
     }
 
     @GetMapping("/user/{id}")
-    public List<SensorMeasurementDto> getUserMeasurements(@PathVariable String id) {
-        return measurementService.getUserMeasurements(id);
+    public ResponseEntity<List<SensorMeasurementDto>> getUserMeasurements(@PathVariable String id) {
+        var measurements = measurementService.getUserMeasurements(id);
+        return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
     @GetMapping("/sensor/{id}")

@@ -15,8 +15,9 @@ import java.time.Instant;
 public class SensorMeasurementDto implements Serializable {
     private String uuid;
     private Long measurementId;
+    private String sensorBaseName;
+    private String sensorName;
     private String sensorType;
-    private String sensorTypeName;
     private String location;
     private Double alarmMax;
     private Double alarmMin;
