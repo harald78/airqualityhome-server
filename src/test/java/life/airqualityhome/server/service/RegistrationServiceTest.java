@@ -304,7 +304,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUsername("any-username");
-        registerConfirmationDto.setSensorId("F0F0F0");
+        registerConfirmationDto.setUuid("F0F0F0");
         List<SensorDto> sensorList = List.of(
                 SensorDto.builder().sensorBaseSensorTypeId(1L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build(),
                 SensorDto.builder().sensorBaseSensorTypeId(2L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build()
@@ -329,7 +329,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUsername("any-username");
-        registerConfirmationDto.setSensorId("F0F0F0");
+        registerConfirmationDto.setUuid("F0F0F0");
         List<SensorDto> sensorList = List.of();
 
         // when
@@ -351,7 +351,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUsername("any-username");
-        registerConfirmationDto.setSensorId("F0F0F0");
+        registerConfirmationDto.setUuid("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
                 .userId(1L).sensorBase(SensorBaseEntity.builder()
@@ -424,7 +424,7 @@ class RegistrationServiceTest {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
         registerConfirmationDto.setUsername("any-username");
-        registerConfirmationDto.setSensorId("F0F0F0");
+        registerConfirmationDto.setUuid("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
                 .userId(1L).sensorBase(SensorBaseEntity.builder()

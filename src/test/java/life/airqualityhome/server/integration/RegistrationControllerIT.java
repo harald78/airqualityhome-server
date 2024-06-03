@@ -139,7 +139,7 @@ public class RegistrationControllerIT {
 
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUsername("user1");
-        registerConfirmation.setSensorId("F0F0F0");
+        registerConfirmation.setUuid("F0F0F0");
 
         var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
 
@@ -158,7 +158,7 @@ public class RegistrationControllerIT {
 
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUsername("user1");
-        registerConfirmation.setSensorId("F0F0F3");
+        registerConfirmation.setUuid("F0F0F3");
 
         var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class));
 
@@ -178,7 +178,7 @@ public class RegistrationControllerIT {
         UUID uuid = UUID.nameUUIDFromBytes("F0F0F3".getBytes());
         RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
         registerConfirmation.setUsername("user2");
-        registerConfirmation.setSensorId("F0F0F3");
+        registerConfirmation.setUuid("F0F0F3");
 
         var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
         Optional<List<SensorEntity>> registeredSensors = sensorRepository.findByUuid(uuid);

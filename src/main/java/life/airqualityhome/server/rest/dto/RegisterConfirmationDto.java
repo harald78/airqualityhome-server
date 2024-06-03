@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterConfirmationDto {
     private String username;
-    private String sensorId;
+    private String uuid;
 }
