@@ -8,27 +8,32 @@ import life.airqualityhome.server.model.SensorEntity;
 
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
-import life.airqualityhome.server.repositories.SensorRepository;
+import life.airqualityhome.server.rest.dto.SensorRawDataDto;
+import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.service.SensorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MeasurementServiceImplTest {
     @Mock
-    private SensorRepository sensorRepository;
+    private SensorService sensorService;
 
     @Mock
     private MeasurementRepository measurementRepository;
@@ -37,7 +42,7 @@ class MeasurementServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.sut = new MeasurementServiceImpl(sensorRepository, measurementRepository);
+        this.sut = new MeasurementServiceImpl(sensorService, measurementRepository);
     }
 
     @Test
@@ -73,8 +78,7 @@ class MeasurementServiceImplTest {
         ;
 
         //when
-        when(sensorRepository.findByUserEntityId(anyLong())).thenReturn(sensorList);
-
+        when(sensorService.getSensorEntitiesForUser(anyLong())).thenReturn(sensorList);
         when(measurementRepository.findTopBySensorEntityOrderByTimestampDesc(any(SensorEntity.class))).thenReturn(Optional.of(measurement));
 
         var result = sut.getUserMeasurements("1");
@@ -96,5 +100,143 @@ class MeasurementServiceImplTest {
         assertEquals(sensorEntity.getAlarmMax(), dto.getAlarmMax());
         assertEquals(measurement.getTimestamp(), dto.getTimestamp());
         assertEquals(measurement.getUnit().name(), dto.getUnit());
+        verify(sensorService, times(1)).getSensorEntitiesForUser(anyLong());
+        verify(measurementRepository, times(1)).findTopBySensorEntityOrderByTimestampDesc(any(SensorEntity.class));
     }
+
+    @Test
+    void shouldFindSensorTypeInSensorList() {
+        // given
+        List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
+
+        // when
+        var result = sut.filterBySensorType(sensorEntities, SensorTypeEntity.Type.HUMIDITY);
+
+        // then
+        assertTrue(result.isPresent());
+        assertEquals(2L, result.get().getId());
+    }
+
+    @Test
+    void shouldGetMeasurementEntity() {
+        // given
+        List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
+        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+
+        // when
+        var result = sut.getMeasurementEntity(getRawMeasurementsForTest().get(0), sensorEntities, timestamp, "F0F0F0");
+
+        // then
+        assertNotNull(result);
+        assertEquals(MeasurementEntity.class, result.getClass());
+        assertEquals(MeasurementEntity.Unit.CELSIUS, result.getUnit());
+        assertEquals(SensorTypeEntity.Type.TEMPERATURE, result.getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
+        assertEquals(32.0, result.getValue());
+    }
+
+    @Test
+    void shouldThrowIllegalStateException() {
+        // given
+        List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
+        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        SensorRawDataDto rawDataDto = SensorRawDataDto.builder()
+                                                      .type(SensorTypeEntity.Type.GAS)
+                                                      .unit(MeasurementEntity.Unit.PARTICLE)
+                                                      .value(3000.0).build();
+
+        // when
+        var result = assertThrows(IllegalStateException.class, () -> sut.getMeasurementEntity(rawDataDto, sensorEntities, timestamp, "F0F0F0"));
+
+        assertNotNull(result);
+        assertEquals("Sensor type GAS not found for base F0F0F0", result.getMessage());
+    }
+
+    @Test
+    void shouldAddMeasurementsAndSaveData() {
+        // given
+        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        BaseRawDataDto baseRawDataDto = BaseRawDataDto.builder()
+            .id("F0F0F0")
+            .base("AZEnvy")
+            .timestamp(timestamp)
+            .measurements(getRawMeasurementsForTest()).build();
+
+        // when
+        when(sensorService.getAllSensorEntitiesByUUID(anyString())).thenReturn(getSensorEntitiesForTest());
+        when(measurementRepository.saveAll(anyList())).thenAnswer(new Answer<List<MeasurementEntity>>() {
+            @Override
+            public List<MeasurementEntity> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object argument = invocationOnMock.getArguments()[0];
+                List<MeasurementEntity> measurements = new ArrayList<>();
+                for (Object o : (List<?>) argument) {
+                    if (!(o instanceof MeasurementEntity)) {
+                        throw new ClassCastException();
+                    } else {
+                        measurements.add((MeasurementEntity) o);
+                    }
+                }
+                assertEquals(2, measurements.size());
+                assertEquals(SensorTypeEntity.Type.TEMPERATURE, measurements.get(0).getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
+                assertEquals(MeasurementEntity.Unit.CELSIUS, measurements.get(0).getUnit());
+                assertEquals(32.0, measurements.get(0).getValue());
+                assertEquals(SensorTypeEntity.Type.HUMIDITY, measurements.get(1).getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
+                assertEquals(MeasurementEntity.Unit.PERCENT, measurements.get(1).getUnit());
+                assertEquals(55.0, measurements.get(1).getValue());
+                return measurements;
+            }
+        });
+        var result = sut.addMeasurements(baseRawDataDto);
+
+        assertTrue(result);
+        verify(measurementRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    void shouldReturnFalseOnSensorEntitiesEmpty() {
+        // given
+        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        BaseRawDataDto baseRawDataDto = BaseRawDataDto.builder()
+                                                      .id("F0F0F0")
+                                                      .base("AZEnvy")
+                                                      .timestamp(timestamp)
+                                                      .measurements(getRawMeasurementsForTest()).build();
+
+        // when
+        when(sensorService.getAllSensorEntitiesByUUID(anyString())).thenReturn(List.of());
+        var result = sut.addMeasurements(baseRawDataDto);
+
+        assertFalse(result);
+        verify(measurementRepository, times(0)).saveAll(anyList());
+    }
+
+    List<SensorRawDataDto> getRawMeasurementsForTest() {
+        return List.of(SensorRawDataDto.builder()
+                                       .type(SensorTypeEntity.Type.TEMPERATURE)
+                                       .unit(MeasurementEntity.Unit.CELSIUS)
+                                       .value(32.0).build(),
+                       SensorRawDataDto.builder()
+                                       .type(SensorTypeEntity.Type.HUMIDITY)
+                                       .unit(MeasurementEntity.Unit.PERCENT)
+                                       .value(55.0).build()); }
+
+    List<SensorEntity> getSensorEntitiesForTest() {
+        SensorBaseSensorTypeEntity sensorBaseSensorType = new SensorBaseSensorTypeEntity();
+        sensorBaseSensorType.setId(1L);
+        sensorBaseSensorType.setSensorTypesId(1L);
+        sensorBaseSensorType.setSensorBaseEntityId(1L);
+        sensorBaseSensorType.setSensorBase(SensorBaseEntity.builder().id(1L).build());
+        sensorBaseSensorType.setSensorType(SensorTypeEntity.builder().id(1L).type(SensorTypeEntity.Type.TEMPERATURE).build());
+        SensorBaseSensorTypeEntity sensorBaseSensorType2 = new SensorBaseSensorTypeEntity();
+        sensorBaseSensorType2.setId(2L);
+        sensorBaseSensorType2.setSensorTypesId(2L);
+        sensorBaseSensorType2.setSensorBaseEntityId(1L);
+        sensorBaseSensorType2.setSensorBase(SensorBaseEntity.builder().id(1L).build());
+        sensorBaseSensorType2.setSensorType(SensorTypeEntity.builder().id(2L).type(SensorTypeEntity.Type.HUMIDITY).build());
+
+        return List.of(
+            SensorEntity.builder().id(1L).sensorBaseSensorTypeId(1L).sensorBaseSensorType(sensorBaseSensorType).build(),
+            SensorEntity.builder().id(2L).sensorBaseSensorTypeId(2L).sensorBaseSensorType(sensorBaseSensorType2).build());
+    }
+
+
 }

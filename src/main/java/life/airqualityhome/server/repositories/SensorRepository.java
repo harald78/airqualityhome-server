@@ -14,5 +14,5 @@ public interface SensorRepository extends RefreshableCRUDRepository<SensorEntity
 
     Optional<List<SensorEntity>> findByUuid(UUID uuid);
     SensorEntity findFirstById(Long id);
-    List<SensorEntity> findByUserEntityId(Long userId);
+    Optional<List<SensorEntity>> findByUserEntityId(Long userId);
 }

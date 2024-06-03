@@ -25,7 +25,7 @@ public class MeasurementEntity extends BaseEntity {
     private Instant timestamp;
 
     public enum Unit {
-        CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PPM;
+        CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PARTICLE;
     }
 
     @Enumerated(EnumType.STRING)
