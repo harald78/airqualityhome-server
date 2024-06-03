@@ -303,7 +303,7 @@ class RegistrationServiceTest {
     void confirmSensorRegistration_shouldReturnOK_sensorAlreadyRegistered() {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
-        registerConfirmationDto.setUserName("any-username");
+        registerConfirmationDto.setUsername("any-username");
         registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of(
                 SensorDto.builder().sensorBaseSensorTypeId(1L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build(),
@@ -328,7 +328,7 @@ class RegistrationServiceTest {
     void confirmSensorRegistration_shouldThrow_noRegistrationActive() {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
-        registerConfirmationDto.setUserName("any-username");
+        registerConfirmationDto.setUsername("any-username");
         registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
 
@@ -350,7 +350,7 @@ class RegistrationServiceTest {
     void confirmSensorRegistration_returnOK_sensorsRegisteredSuccessfully() {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
-        registerConfirmationDto.setUserName("any-username");
+        registerConfirmationDto.setUsername("any-username");
         registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()
@@ -423,7 +423,7 @@ class RegistrationServiceTest {
     void confirmSensorRegistration_throwFailedError_sensorListEmpty() {
         // given
         RegisterConfirmationDto registerConfirmationDto = new RegisterConfirmationDto();
-        registerConfirmationDto.setUserName("any-username");
+        registerConfirmationDto.setUsername("any-username");
         registerConfirmationDto.setSensorId("F0F0F0");
         List<SensorDto> sensorList = List.of();
         RegisterRequestEntity registerRequestEntity = RegisterRequestEntity.builder()

@@ -94,7 +94,7 @@ public class RegistrationService {
 
     @Transactional
     public String confirmSensorRegistration(RegisterConfirmationDto registerConfirmation) {
-        UserResponseDto userResponseDto = userService.getUserByUserName(registerConfirmation.getUserName());
+        UserResponseDto userResponseDto = userService.getUserByUserName(registerConfirmation.getUsername());
         Optional<RegisterRequestEntity> registerRequest = registerRequestRepository.findByUserIdAndActiveTrue(userResponseDto.getId());
 
         // Check if sensor is already registered
@@ -105,14 +105,14 @@ public class RegistrationService {
         }
         // Check if registration request is present
         if (registerRequest.isEmpty()) {
-            log.error("No sensor registration active for user {}", registerConfirmation.getUserName());
+            log.error("No sensor registration active for user {}", registerConfirmation.getUsername());
             throw new NoSensorRegistrationActiveException("No sensor registration active for this user");
         }
 
         // handle Sensor Request for Sensor UUID and user
         List<SensorDto> newSensors = sensorService.registerSensorsForUser(registerRequest.get(), userResponseDto.getId(), registerConfirmation.getSensorId());
         if (newSensors.isEmpty()) {
-            log.error("Sensor registration failed for user {} and sensor {}", registerConfirmation.getUserName(), registerConfirmation.getSensorId());
+            log.error("Sensor registration failed for user {} and sensor {}", registerConfirmation.getUsername(), registerConfirmation.getSensorId());
             throw new SensorRegistrationFailedException("Sensor registration failed");
         }
 
@@ -121,7 +121,7 @@ public class RegistrationService {
         activeRegisterRequest.setActive(false);
         registerRequestRepository.save(activeRegisterRequest);
 
-        log.info("Sensor registration success for user {} and sensor {}", registerConfirmation.getUserName(), registerConfirmation.getSensorId());
+        log.info("Sensor registration success for user {} and sensor {}", registerConfirmation.getUsername(), registerConfirmation.getSensorId());
         return "OK";
     }
 
