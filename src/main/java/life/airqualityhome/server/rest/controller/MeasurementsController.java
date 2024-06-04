@@ -1,6 +1,7 @@
 package life.airqualityhome.server.rest.controller;
 
-import life.airqualityhome.server.rest.dto.SensorMeasurementDto;
+import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
+import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
 import life.airqualityhome.server.service.measurement.MeasurementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +22,16 @@ public class MeasurementsController {
     }
 
     @PostMapping
-    public String addMeasurement() {
-        return "Hello Measurements";
+    public ResponseEntity<String> addMeasurement(@RequestBody BaseRawDataDto rawDataDto) {
+        var result = this.measurementService.addMeasurements(rawDataDto);
+        if (result) {
+            return new ResponseEntity<>("OK", HttpStatus.CREATED);
+        }
+            return new ResponseEntity<>("OK", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<SensorMeasurementDto>> getUserMeasurements(@PathVariable String id) {
+    public ResponseEntity<List<LatestMeasurementDto>> getUserMeasurements(@PathVariable String id) {
         var measurements = measurementService.getUserMeasurements(id);
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
@@ -44,5 +49,15 @@ public class MeasurementsController {
     @DeleteMapping("/sensor/{id}")
     public String deleteSensorMeasurements() {
         return "Hello Measurements";
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

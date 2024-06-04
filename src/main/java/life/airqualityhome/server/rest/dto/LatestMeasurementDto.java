@@ -12,7 +12,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorMeasurementDto implements Serializable {
+public class LatestMeasurementDto implements Serializable {
     private String uuid;
     private Long measurementId;
     private String sensorBaseName;
@@ -24,6 +24,4 @@ public class SensorMeasurementDto implements Serializable {
     private Instant timestamp;
     private String unit;
     private Double value;
-
-
 }
