@@ -1,10 +1,11 @@
 package life.airqualityhome.server.rest.controller;
 
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
-import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import life.airqualityhome.server.service.measurement.MeasurementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class MeasurementsController {
         this.measurementService = measurementService;
     }
 
-    @PostMapping
+    @PostMapping(value = "/raw-data", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addMeasurement(@RequestBody BaseRawDataDto rawDataDto) {
         var result = this.measurementService.addMeasurements(rawDataDto);
         if (result) {

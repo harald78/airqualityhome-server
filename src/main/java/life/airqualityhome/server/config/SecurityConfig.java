@@ -77,7 +77,8 @@ public class SecurityConfig {
                                 mvc.pattern( "/swagger-ui.html"))
                         .permitAll())
                 .authorizeHttpRequests((exchange) ->
-                    exchange.requestMatchers("/api/user/save", "/api/user/login", "/api/user/logout",  "/api/user/refreshToken", "/api/register/sensor/confirm").permitAll())
+                    exchange.requestMatchers("/api/user/save", "/api/user/login", "/api/user/logout",
+                            "/api/user/refreshToken", "/api/register/sensor/confirm", "/api/measurements/raw-data").permitAll())
                 .authorizeHttpRequests((exchange) ->
                         exchange.requestMatchers("/api/**").authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

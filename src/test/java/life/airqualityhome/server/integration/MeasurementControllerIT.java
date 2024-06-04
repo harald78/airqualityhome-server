@@ -4,14 +4,17 @@ import life.airqualityhome.server.model.MeasurementEntity;
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
-import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -86,29 +89,30 @@ class MeasurementControllerIT {
     @DirtiesContext
     void shouldAddMeasurementAndAnswer_HTTP_OK() {
         // given
-        var timestamp = LocalDateTime.of(2024, 6, 4, 6, 10, 0);
-        BaseRawDataDto baseRawDataDto = BaseRawDataDto
-            .builder()
-            .id("F0F0F0")
-            .base("AZEnvy")
-            .timestamp(timestamp)
-            .measurements(List.of(
-                SensorRawDataDto
-                    .builder()
-                    .value(32.0)
-                    .unit(MeasurementEntity.Unit.CELSIUS)
-                    .type(SensorTypeEntity.Type.TEMPERATURE)
-                    .build(),
-                SensorRawDataDto
-                    .builder()
-                    .value(2000.0)
-                    .unit(MeasurementEntity.Unit.PPM)
-                    .type(SensorTypeEntity.Type.GAS)
-                    .build()))
-            .build();
+        String jsonPayload = "{"
+                + "\"id\":\"F0F0F0\","
+                + "\"base\":\"AZEnvy\","
+                + "\"timestamp\":\"2024-06-04T22:20:46+0200\","
+                + "\"measurements\":["
+                + "{"
+                + "\"value\":32.0,"
+                + "\"unit\":\"CELSIUS\","
+                + "\"type\":\"TEMPERATURE\""
+                + "},"
+                + "{"
+                + "\"value\":2000.0,"
+                + "\"unit\":\"PPM\","
+                + "\"type\":\"GAS\""
+                + "}"
+                + "]"
+                + "}";
 
         // when
-        var result = restTemplate.postForEntity(BASE_URL, baseRawDataDto, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
+        var result = restTemplate.postForEntity(BASE_URL + "/raw-data", request, String.class);
 
         // then
         assertNotNull(result);
@@ -120,29 +124,32 @@ class MeasurementControllerIT {
     @DirtiesContext
     void shouldThrowIllegalStateExceptionAndReturn_HTTP_BAD_REQUEST() {
         // given
-        var timestamp = LocalDateTime.of(2024, 6, 4, 6, 10, 0);
-        BaseRawDataDto baseRawDataDto = BaseRawDataDto
-            .builder()
-            .id("F0F0F0")
-            .base("AZEnvy")
-            .timestamp(timestamp)
-            .measurements(List.of(
-                SensorRawDataDto
-                    .builder()
-                    .value(32.0)
-                    .unit(MeasurementEntity.Unit.CELSIUS)
-                    .type(SensorTypeEntity.Type.TEMPERATURE)
-                    .build(),
-                SensorRawDataDto
-                    .builder()
-                    .value(55.0)
-                    .unit(MeasurementEntity.Unit.PERCENT)
-                    .type(SensorTypeEntity.Type.HUMIDITY)
-                    .build()))
-            .build();
+        String jsonPayload = "{"
+                + "\"id\":\"F0F0F0\","
+                + "\"base\":\"AZEnvy\","
+                + "\"timestamp\":\"2024-06-04T22:20:46+0200\","
+                + "\"measurements\":["
+                + "{"
+                + "\"value\":32.0,"
+                + "\"unit\":\"CELSIUS\","
+                + "\"type\":\"TEMPERATURE\""
+                + "},"
+                + "{"
+                + "\"value\":55.0,"
+                + "\"unit\":\"PERCENT\","
+                + "\"type\":\"HUMIDITY\""
+                + "}"
+                + "]"
+                + "}";
 
         // when
-        var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity(BASE_URL, baseRawDataDto, String.class));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
+
+        // when
+        var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity(BASE_URL + "/raw-data", request, String.class));
 
         // then
         assertNotNull(exception);

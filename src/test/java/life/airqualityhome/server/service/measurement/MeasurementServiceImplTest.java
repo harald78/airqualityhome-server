@@ -9,7 +9,7 @@ import life.airqualityhome.server.model.SensorEntity;
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
-import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import life.airqualityhome.server.service.SensorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import org.mockito.stubbing.Answer;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -121,7 +122,7 @@ class MeasurementServiceImplTest {
     void shouldGetMeasurementEntity() {
         // given
         List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
-        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
 
         // when
         var result = sut.getMeasurementEntity(getRawMeasurementsForTest().get(0), sensorEntities, timestamp, "F0F0F0");
@@ -138,7 +139,7 @@ class MeasurementServiceImplTest {
     void shouldThrowIllegalStateException() {
         // given
         List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
-        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
         SensorRawDataDto rawDataDto = SensorRawDataDto.builder()
                                                       .type(SensorTypeEntity.Type.GAS)
                                                       .unit(MeasurementEntity.Unit.PPM)
@@ -154,7 +155,7 @@ class MeasurementServiceImplTest {
     @Test
     void shouldAddMeasurementsAndSaveData() {
         // given
-        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
         BaseRawDataDto baseRawDataDto = BaseRawDataDto.builder()
             .id("F0F0F0")
             .base("AZEnvy")
@@ -194,7 +195,7 @@ class MeasurementServiceImplTest {
     @Test
     void shouldReturnFalseOnSensorEntitiesEmpty() {
         // given
-        LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
+        Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
         BaseRawDataDto baseRawDataDto = BaseRawDataDto.builder()
                                                       .id("F0F0F0")
                                                       .base("AZEnvy")

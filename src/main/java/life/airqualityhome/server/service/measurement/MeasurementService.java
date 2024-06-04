@@ -1,7 +1,7 @@
 package life.airqualityhome.server.service.measurement;
 
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
-import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 
 import java.util.List;
 

@@ -6,9 +6,11 @@ import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
-import life.airqualityhome.server.rest.dto.mapper.BaseRawDataDto;
+import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import life.airqualityhome.server.service.SensorService;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -74,7 +76,7 @@ public class MeasurementServiceImpl implements MeasurementService {
             sensorEntities.size());
     }
 
-    MeasurementEntity getMeasurementEntity(SensorRawDataDto rawDataDto, List<SensorEntity> sensorEntities, LocalDateTime timestamp, String id) throws IllegalStateException {
+    MeasurementEntity getMeasurementEntity(SensorRawDataDto rawDataDto, List<SensorEntity> sensorEntities, Instant timestamp, String id) throws IllegalStateException {
             Optional<SensorEntity> sensor = this.filterBySensorType(sensorEntities, rawDataDto.getType());
             if (sensor.isEmpty()) {
                 throw new IllegalStateException("Sensor type " + rawDataDto.getType() + " not found for base " + id);
@@ -84,7 +86,7 @@ public class MeasurementServiceImpl implements MeasurementService {
                                     .unit(rawDataDto.getUnit())
                                     .sensorEntity(sensor.get())
                                     .sensorId(sensor.get().getId())
-                                    .timestamp(timestamp.toInstant(ZoneOffset.UTC)).build();
+                                    .timestamp(timestamp).build();
     }
 
     Optional<SensorEntity> filterBySensorType(List<SensorEntity> sensorEntities, SensorTypeEntity.Type sensorType) {
