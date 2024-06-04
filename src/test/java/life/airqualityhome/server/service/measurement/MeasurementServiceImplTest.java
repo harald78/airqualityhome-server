@@ -73,7 +73,7 @@ class MeasurementServiceImplTest {
                 .sensorEntity(sensorList.get(0))
                 .timestamp(Instant.now())
                 .unit(MeasurementEntity.Unit.CELSIUS)
-                .value(25.0)
+                .sensorValue(25.0)
                 .build()
         ;
 
@@ -90,7 +90,7 @@ class MeasurementServiceImplTest {
         assertEquals(uuid1.toString(), dto.getUuid());
         assertEquals(measurement.getId(), dto.getMeasurementId());
         assertEquals("CELSIUS", dto.getUnit());
-        assertEquals(measurement.getValue(), dto.getValue());
+        assertEquals(measurement.getSensorValue(), dto.getValue());
         assertEquals(sensorEntity.getLocation(), dto.getLocation());
         assertEquals(sensorEntity.getLocation(), dto.getLocation());
         assertEquals(sensorEntity.getSensorBaseSensorType().getSensorType().getName(), dto.getSensorName());
@@ -131,7 +131,7 @@ class MeasurementServiceImplTest {
         assertEquals(MeasurementEntity.class, result.getClass());
         assertEquals(MeasurementEntity.Unit.CELSIUS, result.getUnit());
         assertEquals(SensorTypeEntity.Type.TEMPERATURE, result.getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
-        assertEquals(32.0, result.getValue());
+        assertEquals(32.0, result.getSensorValue());
     }
 
     @Test
@@ -141,7 +141,7 @@ class MeasurementServiceImplTest {
         LocalDateTime timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0);
         SensorRawDataDto rawDataDto = SensorRawDataDto.builder()
                                                       .type(SensorTypeEntity.Type.GAS)
-                                                      .unit(MeasurementEntity.Unit.PARTICLE)
+                                                      .unit(MeasurementEntity.Unit.PPM)
                                                       .value(3000.0).build();
 
         // when
@@ -178,10 +178,10 @@ class MeasurementServiceImplTest {
                 assertEquals(2, measurements.size());
                 assertEquals(SensorTypeEntity.Type.TEMPERATURE, measurements.get(0).getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
                 assertEquals(MeasurementEntity.Unit.CELSIUS, measurements.get(0).getUnit());
-                assertEquals(32.0, measurements.get(0).getValue());
+                assertEquals(32.0, measurements.get(0).getSensorValue());
                 assertEquals(SensorTypeEntity.Type.HUMIDITY, measurements.get(1).getSensorEntity().getSensorBaseSensorType().getSensorType().getType());
                 assertEquals(MeasurementEntity.Unit.PERCENT, measurements.get(1).getUnit());
-                assertEquals(55.0, measurements.get(1).getValue());
+                assertEquals(55.0, measurements.get(1).getSensorValue());
                 return measurements;
             }
         });

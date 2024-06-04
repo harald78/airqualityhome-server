@@ -18,14 +18,17 @@ public class MeasurementEntity extends BaseEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "sensor_id", nullable = false)
+    @JoinColumn(name = "sensor_id", insertable = false, updatable = false)
     private SensorEntity sensorEntity;
+
+    @Column(name = "sensor_id", nullable = false)
+    private long sensorId;
 
     @Column(nullable = false)
     private Instant timestamp;
 
     public enum Unit {
-        CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PARTICLE;
+        CELSIUS, FAHRENHEIT, M_BAR, PERCENT, PPM;
     }
 
     @Enumerated(EnumType.STRING)
@@ -33,5 +36,5 @@ public class MeasurementEntity extends BaseEntity {
     private Unit unit;
 
     @Column(nullable = false)
-    private Double value;
+    private Double sensorValue;
 }

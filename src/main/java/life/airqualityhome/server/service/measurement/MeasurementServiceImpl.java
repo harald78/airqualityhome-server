@@ -14,7 +14,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -33,28 +32,32 @@ public class MeasurementServiceImpl implements MeasurementService {
 
     @Override
     public List<LatestMeasurementDto> getUserMeasurements(String userId) {
-        List<SensorEntity> sensors = sensorService.getSensorEntitiesForUser(Long.parseLong(userId));
+        try {
+            List<SensorEntity> sensors = sensorService.getSensorEntitiesForUser(Long.parseLong(userId));
+            return sensors.stream().map(sensor -> {
+                Optional<MeasurementEntity> measurement = measurementRepository.findTopBySensorEntityOrderByTimestampDesc(sensor);
+                if (measurement.isPresent()) {
+                    var sensorMeasurement = measurement.get();
+                    LatestMeasurementDto dto = new LatestMeasurementDto();
+                    dto.setUuid(sensor.getUuid().toString());
+                    dto.setMeasurementId(sensorMeasurement.getId());
+                    dto.setSensorBaseName(sensor.getSensorBaseSensorType().getSensorBase().getName());
+                    dto.setSensorName(sensor.getSensorBaseSensorType().getSensorType().getName());
+                    dto.setSensorType(sensor.getSensorBaseSensorType().getSensorType().getType().name());
+                    dto.setLocation(sensor.getLocation());
+                    dto.setAlarmMax(sensor.getAlarmMax());
+                    dto.setAlarmMin(sensor.getAlarmMin());
+                    dto.setTimestamp(sensorMeasurement.getTimestamp());
+                    dto.setUnit(sensorMeasurement.getUnit().name());
+                    dto.setValue(sensorMeasurement.getSensorValue());
+                    return dto;
+                }
+                return null;
+            }).filter(Objects::nonNull).toList();
 
-        return sensors.stream().map(sensor -> {
-            Optional<MeasurementEntity> measurement = measurementRepository.findTopBySensorEntityOrderByTimestampDesc(sensor);
-            if (measurement.isPresent()) {
-                var sensorMeasurement = measurement.get();
-                LatestMeasurementDto dto = new LatestMeasurementDto();
-                dto.setUuid(sensor.getUuid().toString());
-                dto.setMeasurementId(sensorMeasurement.getId());
-                dto.setSensorBaseName(sensor.getSensorBaseSensorType().getSensorBase().getName());
-                dto.setSensorName(sensor.getSensorBaseSensorType().getSensorType().getName());
-                dto.setSensorType(sensor.getSensorBaseSensorType().getSensorType().getType().name());
-                dto.setLocation(sensor.getLocation());
-                dto.setAlarmMax(sensor.getAlarmMax());
-                dto.setAlarmMin(sensor.getAlarmMin());
-                dto.setTimestamp(sensorMeasurement.getTimestamp());
-                dto.setUnit(sensorMeasurement.getUnit().name());
-                dto.setValue(sensorMeasurement.getValue());
-                return dto;
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid user id");
+        }
     }
 
     @Override
@@ -77,9 +80,10 @@ public class MeasurementServiceImpl implements MeasurementService {
                 throw new IllegalStateException("Sensor type " + rawDataDto.getType() + " not found for base " + id);
             }
             return MeasurementEntity.builder()
-                                    .value(rawDataDto.getValue())
+                                    .sensorValue(rawDataDto.getValue())
                                     .unit(rawDataDto.getUnit())
                                     .sensorEntity(sensor.get())
+                                    .sensorId(sensor.get().getId())
                                     .timestamp(timestamp.toInstant(ZoneOffset.UTC)).build();
     }
 
