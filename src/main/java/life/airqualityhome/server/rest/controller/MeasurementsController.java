@@ -1,5 +1,6 @@
 package life.airqualityhome.server.rest.controller;
 
+import life.airqualityhome.server.rest.dto.HistoryMeasurementDto;
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
 import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import life.airqualityhome.server.service.measurement.MeasurementService;
@@ -38,8 +39,10 @@ public class MeasurementsController {
     }
 
     @GetMapping("/sensor/{id}")
-    public String getSensorMeasurements() {
-        return "Hello Measurements";
+    public ResponseEntity<HistoryMeasurementDto> getSensorMeasurements(@PathVariable Long id) {
+        var measurements = measurementService.getSensorMeasurements(id);
+        return new ResponseEntity<>(measurements, HttpStatus.OK);
+
     }
 
     @DeleteMapping("/user/{id}")

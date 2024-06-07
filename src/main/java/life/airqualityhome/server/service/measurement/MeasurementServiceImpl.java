@@ -4,6 +4,7 @@ import life.airqualityhome.server.model.MeasurementEntity;
 import life.airqualityhome.server.model.SensorEntity;
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
+import life.airqualityhome.server.rest.dto.HistoryMeasurementDto;
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
 import life.airqualityhome.server.rest.dto.BaseRawDataDto;
@@ -14,8 +15,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -23,9 +26,9 @@ public class MeasurementServiceImpl implements MeasurementService {
 
 
     private final SensorService sensorService;
-
-
     private final MeasurementRepository measurementRepository;
+
+
 
     public MeasurementServiceImpl(SensorService sensorService, MeasurementRepository measurementRepository) {
         this.sensorService = sensorService;
@@ -76,22 +79,47 @@ public class MeasurementServiceImpl implements MeasurementService {
             sensorEntities.size());
     }
 
+    @Override
+    public HistoryMeasurementDto getSensorMeasurements(Long sensorId) {
+        Instant timestamp = LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC);
+        List<MeasurementEntity> measurements = measurementRepository.findBySensorIdAndTimestampIsAfter(sensorId, timestamp);
+
+        Map<String, List<HistoryMeasurementDto.ChartDataPoint>> groupedData = measurements.stream()
+                .collect(Collectors.groupingBy(
+                        m -> m.getUnit().name(),
+                        Collectors.mapping(
+                                m -> new HistoryMeasurementDto.ChartDataPoint(m.getSensorValue(), m.getTimestamp().atOffset(ZoneOffset.UTC).toLocalDateTime()),
+                                Collectors.toList()
+                        )
+                ));
+
+        List<HistoryMeasurementDto.ChartDataDto> chartDataDto = groupedData.entrySet().stream()
+                .map(entry -> new HistoryMeasurementDto.ChartDataDto(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new HistoryMeasurementDto(sensorId, measurements.get(0).getUnit().name(), chartDataDto);
+    }
+
     MeasurementEntity getMeasurementEntity(SensorRawDataDto rawDataDto, List<SensorEntity> sensorEntities, Instant timestamp, String id) throws IllegalStateException {
-            Optional<SensorEntity> sensor = this.filterBySensorType(sensorEntities, rawDataDto.getType());
-            if (sensor.isEmpty()) {
-                throw new IllegalStateException("Sensor type " + rawDataDto.getType() + " not found for base " + id);
-            }
-            return MeasurementEntity.builder()
-                                    .sensorValue(rawDataDto.getValue())
-                                    .unit(rawDataDto.getUnit())
-                                    .sensorEntity(sensor.get())
-                                    .sensorId(sensor.get().getId())
-                                    .timestamp(timestamp).build();
+        Optional<SensorEntity> sensor = this.filterBySensorType(sensorEntities, rawDataDto.getType());
+        if (sensor.isEmpty()) {
+            throw new IllegalStateException("Sensor type " + rawDataDto.getType() + " not found for base " + id);
+        }
+        return MeasurementEntity.builder()
+                .sensorValue(rawDataDto.getValue())
+                .unit(rawDataDto.getUnit())
+                .sensorEntity(sensor.get())
+                .sensorId(sensor.get().getId())
+                .timestamp(timestamp).build();
     }
 
     Optional<SensorEntity> filterBySensorType(List<SensorEntity> sensorEntities, SensorTypeEntity.Type sensorType) {
-        return sensorEntities.stream().filter(s -> s.getSensorBaseSensorType().getSensorType().getType().equals(sensorType))
-                             .findFirst();
+        if (sensorEntities == null || sensorEntities.isEmpty()) {
+            return Optional.empty();
+        }
+        return sensorEntities.stream()
+                .filter(s -> s.getSensorBaseSensorType().getSensorType().getType().equals(sensorType))
+                .findFirst();
     }
 
 }
