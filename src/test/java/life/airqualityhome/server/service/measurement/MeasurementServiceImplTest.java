@@ -89,7 +89,7 @@ class MeasurementServiceImplTest {
         assertEquals(1, result.size());
         var dto = result.get(0);
         assertEquals(uuid1.toString(), dto.getUuid());
-        assertEquals(measurement.getId(), dto.getMeasurementId());
+        assertEquals(measurement.getId(), dto.getId());
         assertEquals("CELSIUS", dto.getUnit());
         assertEquals(measurement.getSensorValue(), dto.getValue());
         assertEquals(sensorEntity.getLocation(), dto.getLocation());

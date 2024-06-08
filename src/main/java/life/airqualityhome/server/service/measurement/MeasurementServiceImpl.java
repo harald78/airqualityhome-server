@@ -11,8 +11,6 @@ import life.airqualityhome.server.service.SensorService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,7 +40,7 @@ public class MeasurementServiceImpl implements MeasurementService {
                     var sensorMeasurement = measurement.get();
                     LatestMeasurementDto dto = new LatestMeasurementDto();
                     dto.setUuid(sensor.getUuid().toString());
-                    dto.setMeasurementId(sensorMeasurement.getId());
+                    dto.setId(sensorMeasurement.getId());
                     dto.setSensorBaseName(sensor.getSensorBaseSensorType().getSensorBase().getName());
                     dto.setSensorName(sensor.getSensorBaseSensorType().getSensorType().getName());
                     dto.setSensorType(sensor.getSensorBaseSensorType().getSensorType().getType().name());

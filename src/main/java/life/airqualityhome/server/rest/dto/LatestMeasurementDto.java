@@ -14,7 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class LatestMeasurementDto implements Serializable {
     private String uuid;
-    private Long measurementId;
+    private Long id;
     private String sensorBaseName;
     private String sensorName;
     private String sensorType;
