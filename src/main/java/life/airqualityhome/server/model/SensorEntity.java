@@ -36,12 +36,24 @@ public class SensorEntity extends BaseEntity {
     @Column(name = "location", nullable = false)
     private String location;
 
+    @Builder.Default
     @Column(name = "alarm_max")
-    private Double alarmMax;
+    private Double alarmMax = 0.0;
 
+    @Builder.Default
     @Column(name = "alarm_min")
-    private Double alarmMin;
+    private Double alarmMin = 0.0;
 
+    @Builder.Default
     @Column(name = "alarm_active")
-    private boolean alarmActive;
+    private boolean alarmActive = false;
+
+    @Builder.Default
+    @Column(name = "warning_threshold")
+    private Double warningThreshold = 0.0;
+
+    @Builder.Default
+    @Column(name = "linear_correction_value")
+    private Double linearCorrectionValue = 0.0;
+
 }

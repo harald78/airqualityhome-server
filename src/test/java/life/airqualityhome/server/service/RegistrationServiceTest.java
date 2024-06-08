@@ -306,8 +306,8 @@ class RegistrationServiceTest {
         registerConfirmationDto.setUsername("any-username");
         registerConfirmationDto.setUuid("F0F0F0");
         List<SensorDto> sensorList = List.of(
-                SensorDto.builder().sensorBaseSensorTypeId(1L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build(),
-                SensorDto.builder().sensorBaseSensorTypeId(2L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).build()
+                SensorDto.builder().sensorBaseSensorTypeId(1L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).warningThreshold(0.0).linearCorrectionValue(0.0).build(),
+                SensorDto.builder().sensorBaseSensorTypeId(2L).uuid("F0F0F0").id(1L).location("Living room").alarmMin(0.0).alarmMax(0.0).alarmActive(false).warningThreshold(0.0).linearCorrectionValue(0.0).build()
         );
 
         // when

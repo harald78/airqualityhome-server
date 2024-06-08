@@ -27,7 +27,7 @@ public class RefreshTokenService {
             .map(user -> RefreshTokenEntity.builder()
                                            .userInfo(user)
                                            .token(UUID.randomUUID().toString())
-                                           .expiryDate(Instant.now().plusMillis(600000))
+                                           .expiryDate(Instant.now().plusMillis(1000 * 60 * 60 * 12)) // max login validity = 12h
                                            .build())
             .map(token -> refreshTokenRepository.save(token))
             .orElseThrow(() -> new UserNotFoundException("User not found"));

@@ -39,8 +39,9 @@ public class MeasurementServiceImpl implements MeasurementService {
                 if (measurement.isPresent()) {
                     var sensorMeasurement = measurement.get();
                     LatestMeasurementDto dto = new LatestMeasurementDto();
-                    dto.setUuid(sensor.getUuid().toString());
                     dto.setId(sensorMeasurement.getId());
+                    dto.setSensorId(sensor.getId());
+                    dto.setUuid(sensor.getUuid().toString());
                     dto.setSensorBaseName(sensor.getSensorBaseSensorType().getSensorBase().getName());
                     dto.setSensorName(sensor.getSensorBaseSensorType().getSensorType().getName());
                     dto.setSensorType(sensor.getSensorBaseSensorType().getSensorType().getType().name());
@@ -50,6 +51,9 @@ public class MeasurementServiceImpl implements MeasurementService {
                     dto.setTimestamp(sensorMeasurement.getTimestamp());
                     dto.setUnit(sensorMeasurement.getUnit().name());
                     dto.setValue(sensorMeasurement.getSensorValue());
+                    dto.setAlarmActive(sensor.isAlarmActive());
+                    dto.setWarningThreshold(sensor.getWarningThreshold());
+                    dto.setLinearCorrectionValue(sensor.getLinearCorrectionValue());
                     return dto;
                 }
                 return null;

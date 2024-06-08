@@ -63,8 +63,10 @@ class MeasurementServiceImplTest {
                                            .uuid(uuid1)
                                            .sensorBaseSensorType(sensorBaseSensorType)
                                            .location("Living room")
-                                           .alarmMin(0.0)
-                                           .alarmMax(0.0)
+                                           .alarmMin(30.0)
+                                           .alarmMax(19.0)
+                                           .warningThreshold(1.0)
+                                           .linearCorrectionValue(0.0)
                                            .build();
 
         var sensorList = List.of(sensorEntity);
@@ -101,6 +103,9 @@ class MeasurementServiceImplTest {
         assertEquals(sensorEntity.getAlarmMax(), dto.getAlarmMax());
         assertEquals(measurement.getTimestamp(), dto.getTimestamp());
         assertEquals(measurement.getUnit().name(), dto.getUnit());
+        assertEquals(1L, dto.getSensorId());
+        assertEquals(0.0, dto.getLinearCorrectionValue());
+        assertEquals(1.0, dto.getWarningThreshold());
         verify(sensorService, times(1)).getSensorEntitiesForUser(anyLong());
         verify(measurementRepository, times(1)).findTopBySensorEntityOrderByTimestampDesc(any(SensorEntity.class));
     }

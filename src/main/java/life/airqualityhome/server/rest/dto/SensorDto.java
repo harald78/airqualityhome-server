@@ -18,4 +18,6 @@ public class SensorDto {
     private double alarmMax;
     private double alarmMin;
     private boolean alarmActive;
+    private double warningThreshold;
+    private double linearCorrectionValue;
 }
