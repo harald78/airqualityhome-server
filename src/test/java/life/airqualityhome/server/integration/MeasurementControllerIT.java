@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class MeasurementControllerIT {
 
-    final static String BASE_URL = "http://localhost:8080/api/measurements";
+    final static String BASE_URL = "http://localhost:8080/api/app/measurements";
 
     @Autowired
     DatabaseUtil databaseUtil;
@@ -82,78 +82,6 @@ class MeasurementControllerIT {
         // then
         assertNotNull(exception);
         assertEquals("Invalid user id", exception.getResponseBodyAsString());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    }
-
-    @Test
-    @DirtiesContext
-    void shouldAddMeasurementAndAnswer_HTTP_OK() {
-        // given
-        String jsonPayload = "{"
-                + "\"id\":\"F0F0F0\","
-                + "\"base\":\"AZEnvy\","
-                + "\"timestamp\":\"2024-06-04T22:20:46+0200\","
-                + "\"measurements\":["
-                + "{"
-                + "\"value\":32.0,"
-                + "\"unit\":\"CELSIUS\","
-                + "\"type\":\"TEMPERATURE\""
-                + "},"
-                + "{"
-                + "\"value\":2000.0,"
-                + "\"unit\":\"PPM\","
-                + "\"type\":\"GAS\""
-                + "}"
-                + "]"
-                + "}";
-
-        // when
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
-        var result = restTemplate.postForEntity(BASE_URL + "/raw-data", request, String.class);
-
-        // then
-        assertNotNull(result);
-        assertEquals("OK", result.getBody());
-        assertEquals(HttpStatus.CREATED, result.getStatusCode());
-    }
-
-    @Test
-    @DirtiesContext
-    void shouldThrowIllegalStateExceptionAndReturn_HTTP_BAD_REQUEST() {
-        // given
-        String jsonPayload = "{"
-                + "\"id\":\"F0F0F0\","
-                + "\"base\":\"AZEnvy\","
-                + "\"timestamp\":\"2024-06-04T22:20:46+0200\","
-                + "\"measurements\":["
-                + "{"
-                + "\"value\":32.0,"
-                + "\"unit\":\"CELSIUS\","
-                + "\"type\":\"TEMPERATURE\""
-                + "},"
-                + "{"
-                + "\"value\":55.0,"
-                + "\"unit\":\"PERCENT\","
-                + "\"type\":\"HUMIDITY\""
-                + "}"
-                + "]"
-                + "}";
-
-        // when
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
-
-        // when
-        var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity(BASE_URL + "/raw-data", request, String.class));
-
-        // then
-        assertNotNull(exception);
-        assertEquals("Sensor type HUMIDITY not found for base F0F0F0", exception.getResponseBodyAsString());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 

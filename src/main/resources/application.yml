@@ -14,8 +14,9 @@ spring:
     show-sql: true
 
 airqualityhome:
-  name: "Test"
   jwt-secret: ${jwt_secret}
+  sensor-api-token-header-name: ${sensor_api_token_header_name}
+  sensor-api-auth-token: ${sensor_api_auth_token}
   token-expire-millis: 300000 # 5 Minutes
 
 management:
