@@ -1,11 +1,9 @@
 package life.airqualityhome.server.service.measurement;
 
-
 import life.airqualityhome.server.model.MeasurementEntity;
 import life.airqualityhome.server.model.SensorBaseEntity;
 import life.airqualityhome.server.model.SensorBaseSensorTypeEntity;
 import life.airqualityhome.server.model.SensorEntity;
-
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
@@ -109,6 +107,38 @@ class MeasurementServiceImplTest {
         verify(sensorService, times(1)).getSensorEntitiesForUser(anyLong());
         verify(measurementRepository, times(1)).findTopBySensorEntityOrderByTimestampDesc(any(SensorEntity.class));
     }
+
+    @Test
+    void getSensorMeasurements() {
+
+        // given
+        Instant timestamp = LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC);
+        var measurement = MeasurementEntity.builder()
+                .sensorValue(25.0)
+                .timestamp(timestamp)
+                .unit(MeasurementEntity.Unit.CELSIUS)
+                .build();
+        when(measurementRepository.findBySensorIdAndTimestampIsAfter(anyLong(), any(Instant.class)))
+                .thenReturn(List.of(measurement));
+
+        // when
+        var result = sut.getSensorMeasurements(1L);
+
+        // then
+        assertNotNull(result);
+        assertEquals(1L, result.getSensorId());
+        assertEquals("CELSIUS", result.getUnit());
+        assertEquals(1, result.getData().size());
+
+        var chartData = result.getData().get(0);
+        assertEquals("CELSIUS", chartData.getType());
+        assertEquals(1, chartData.getSeries().size());
+
+        var dataPoint = chartData.getSeries().get(0);
+        assertEquals(25.0, dataPoint.getValue());
+        assertEquals(timestamp.atOffset(ZoneOffset.UTC).toLocalDateTime(), dataPoint.getName());
+
+        }
 
     @Test
     void shouldFindSensorTypeInSensorList() {
