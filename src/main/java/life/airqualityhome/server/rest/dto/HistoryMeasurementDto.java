@@ -22,7 +22,7 @@ public class HistoryMeasurementDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChartDataDto {
-        private String type;
+        private String name;
         private List<ChartDataPoint> series;
     }
 

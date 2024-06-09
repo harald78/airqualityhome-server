@@ -131,7 +131,7 @@ class MeasurementServiceImplTest {
         assertEquals(1, result.getData().size());
 
         var chartData = result.getData().get(0);
-        assertEquals("CELSIUS", chartData.getType());
+        assertEquals("CELSIUS", chartData.getName());
         assertEquals(1, chartData.getSeries().size());
 
         var dataPoint = chartData.getSeries().get(0);
