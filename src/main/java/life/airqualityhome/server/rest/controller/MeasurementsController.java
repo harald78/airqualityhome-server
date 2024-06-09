@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/measurements")
+@RequestMapping("/api/app/measurements")
 public class MeasurementsController {
 
     private final MeasurementService measurementService;
@@ -21,15 +21,6 @@ public class MeasurementsController {
     @Autowired
     public MeasurementsController(MeasurementService measurementService) {
         this.measurementService = measurementService;
-    }
-
-    @PostMapping(value = "/raw-data", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addMeasurement(@RequestBody BaseRawDataDto rawDataDto) {
-        var result = this.measurementService.addMeasurements(rawDataDto);
-        if (result) {
-            return new ResponseEntity<>("OK", HttpStatus.CREATED);
-        }
-            return new ResponseEntity<>("OK", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/user/{id}")

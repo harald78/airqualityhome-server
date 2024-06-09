@@ -3,7 +3,7 @@ package life.airqualityhome.server.rest.controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/app/notifications")
 public class NotificationsController {
 
     @PostMapping("/read/{id}")

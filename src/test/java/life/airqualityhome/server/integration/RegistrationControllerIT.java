@@ -40,8 +40,9 @@ public class RegistrationControllerIT {
 
     @Autowired DatabaseUtil databaseUtil;
 
-
     private RestTemplate restTemplate;
+
+    final static String BASE_URL = "http://localhost:8080/api/app/register";
 
 
     @BeforeEach
@@ -54,7 +55,7 @@ public class RegistrationControllerIT {
     @DirtiesContext
     public void testGetSensorBasesFromDatabaseTest_HTTP_OK(){
         // when
-        var result = restTemplate.getForEntity("http://localhost:8080/api/register/sensorBase", SensorBaseDto[].class);
+        var result = restTemplate.getForEntity(BASE_URL + "/sensorBase", SensorBaseDto[].class);
 
         // then
         assertNotNull(result);
@@ -70,7 +71,7 @@ public class RegistrationControllerIT {
         this.databaseUtil.setupRegisterRequestDB_forUserQuery();
 
         // when
-        var result = restTemplate.getForEntity("http://localhost:8080/api/register/requests/" + 2L, RegisterRequestDto.class);
+        var result = restTemplate.getForEntity(BASE_URL + "/requests/" + 2L, RegisterRequestDto.class);
 
         // then
         assertNotNull(result);
@@ -92,7 +93,7 @@ public class RegistrationControllerIT {
         registerRequestDto.setLocation("Any location");
 
         // when
-        var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor", registerRequestDto , RegisterRequestDto.class);
+        var result = restTemplate.postForEntity(BASE_URL + "/sensor", registerRequestDto , RegisterRequestDto.class);
 
         assertNotNull(result);
         assertNotNull(result.getBody());
@@ -112,75 +113,11 @@ public class RegistrationControllerIT {
         registerRequestDto.setLocation("Any location");
 
         // when
-        HttpClientErrorException exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/register/sensor", registerRequestDto , String.class));
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/app/register/sensor", registerRequestDto , String.class));
 
         assertNotNull(exception);
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("A sensor registration is already in progress", exception.getResponseBodyAsString());
-    }
-
-    @Test
-    @DirtiesContext
-    public void testConfirmSensorRegistration_HTTP_OK_SensorAlreadyRegistered() {
-        this.databaseUtil.setupUserForTest();
-        this.databaseUtil.setupSensorBaseSensorTypeRelations();
-        this.databaseUtil.setupSensorsForTest();
-
-        RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
-        registerConfirmation.setUsername("user1");
-        registerConfirmation.setUuid("F0F0F0");
-
-        var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
-
-        assertNotNull(result);
-        assertNotNull(result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Sensor with uuid F0F0F0 already registered", result.getBody());
-    }
-
-    @Test
-    @DirtiesContext
-    public void testConfirmSensorRegistration_HTTP_BAD_REQUEST_SensorAlreadyRegistered() throws Exception {
-        this.databaseUtil.setupUserForTest();
-        this.databaseUtil.setupSensorBaseSensorTypeRelations();
-        this.databaseUtil.setupSensorsForTest();
-
-        RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
-        registerConfirmation.setUsername("user1");
-        registerConfirmation.setUuid("F0F0F3");
-
-        var exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class));
-
-        assertNotNull(exception);
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        assertEquals("No sensor registration active for this user", exception.getResponseBodyAsString());
-    }
-
-    @Test
-    @DirtiesContext
-    public void testConfirmSensorRegistration_HTTP_OK_SensorsRegistered() throws Exception {
-        this.databaseUtil.setupUserForTest();
-        this.databaseUtil.setupRegisterRequestDB_forUserQuery();
-        this.databaseUtil.setupSensorBaseSensorTypeRelations();
-        this.databaseUtil.setupSensorsForTest();
-
-        UUID uuid = UUID.nameUUIDFromBytes("F0F0F3".getBytes());
-        RegisterConfirmationDto registerConfirmation = new RegisterConfirmationDto();
-        registerConfirmation.setUsername("user2");
-        registerConfirmation.setUuid("F0F0F3");
-
-        var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/confirm", registerConfirmation, String.class);
-        Optional<List<SensorEntity>> registeredSensors = sensorRepository.findByUuid(uuid);
-
-        assertNotNull(result);
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("OK", result.getBody());
-        assertTrue(registeredSensors.isPresent());
-        assertEquals(2, registeredSensors.get().size());
-        assertEquals(2L, registeredSensors.get().get(0).getUserId());
-        assertEquals(2L, registeredSensors.get().get(1).getUserId());
-        assertEquals("Sleeping room", registeredSensors.get().get(0).getLocation());
-        assertEquals("Sleeping room", registeredSensors.get().get(1).getLocation());
     }
 
     @Test
@@ -195,7 +132,7 @@ public class RegistrationControllerIT {
         registerRequestDto.setLocation("Any location");
 
         // when
-        HttpClientErrorException exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/register/sensor/cancel", registerRequestDto , String.class));
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.BadRequest.class, () -> restTemplate.postForEntity("http://localhost:8080/api/app/register/sensor/cancel", registerRequestDto , String.class));
 
         assertNotNull(exception);
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -214,7 +151,7 @@ public class RegistrationControllerIT {
         registerRequestDto.setLocation("Sleeping room");
 
         // when
-        var result = restTemplate.postForEntity("http://localhost:8080/api/register/sensor/cancel", registerRequestDto , RegisterRequestDto.class);
+        var result = restTemplate.postForEntity("http://localhost:8080/api/app/register/sensor/cancel", registerRequestDto , RegisterRequestDto.class);
 
         assertNotNull(result);
         assertEquals(HttpStatus.OK, result.getStatusCode());

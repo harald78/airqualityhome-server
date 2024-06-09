@@ -27,5 +27,11 @@ logging:
       flywaydb: DEBUG
       hibernate: INFO
 
+airqualityhome:
+  jwt-secret: TEST-SECRET
+  sensor-api-token-header-name: X-API-TOKEN
+  sensor-api-auth-token: TEST-TOKEN
+  token-expire-millis: 300000 # 5 Minutes
+
 server:
   port: 8080
