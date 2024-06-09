@@ -87,6 +87,7 @@ public class MeasurementServiceImpl implements MeasurementService {
     public HistoryMeasurementDto getSensorMeasurements(Long sensorId) {
         Instant timestamp = LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC);
         List<MeasurementEntity> measurements = measurementRepository.findBySensorIdAndTimestampIsAfter(sensorId, timestamp);
+        SensorEntity sensor = this.sensorService.getSensorById(sensorId);
 
         Map<String, List<HistoryMeasurementDto.ChartDataPoint>> groupedData = measurements.stream()
                 .collect(Collectors.groupingBy(
@@ -98,10 +99,15 @@ public class MeasurementServiceImpl implements MeasurementService {
                 ));
 
         List<HistoryMeasurementDto.ChartDataDto> chartDataDto = groupedData.entrySet().stream()
-                .map(entry -> new HistoryMeasurementDto.ChartDataDto(entry.getKey(), entry.getValue()))
+                .map(entry -> new HistoryMeasurementDto.ChartDataDto(sensor.getSensorBaseSensorType().getSensorType().getType().name(),
+                        sensor.getSensorBaseSensorType().getSensorType().getName(), entry.getKey(),
+                        sensor.getAlarmMin(), sensor.getAlarmMax(), sensor.getSensorBaseSensorType().getSensorType().getMinValue(),
+                        sensor.getSensorBaseSensorType().getSensorType().getMaxValue(),
+                        entry.getValue()))
                 .collect(Collectors.toList());
 
-        return new HistoryMeasurementDto(sensorId, measurements.get(0).getUnit().name(), chartDataDto);
+        return new HistoryMeasurementDto(sensor.getSensorBaseSensorType().getSensorBaseEntityId(),
+                sensor.getSensorBaseSensorType().getSensorBase().getName(), chartDataDto);
     }
 
     MeasurementEntity getMeasurementEntity(SensorRawDataDto rawDataDto, List<SensorEntity> sensorEntities, Instant timestamp, String id) throws IllegalStateException {

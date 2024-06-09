@@ -113,25 +113,52 @@ class MeasurementServiceImplTest {
 
         // given
         Instant timestamp = LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC);
+        UUID uuid1 = UUID.nameUUIDFromBytes("F0F0F0".getBytes());
         var measurement = MeasurementEntity.builder()
                 .sensorValue(25.0)
                 .timestamp(timestamp)
                 .unit(MeasurementEntity.Unit.CELSIUS)
                 .build();
+        SensorBaseEntity sensorBase = SensorBaseEntity.builder().id(1L).name("AZEnvy").build();
+        SensorTypeEntity sensorType = SensorTypeEntity.builder()
+                .id(1L)
+                .type(SensorTypeEntity.Type.TEMPERATURE)
+                .minValue(-40.0)
+                .maxValue(120.0)
+                .name("SHT30").build();
+
+        SensorBaseSensorTypeEntity sensorBaseSensorType = new SensorBaseSensorTypeEntity();
+        sensorBaseSensorType.setSensorType(sensorType);
+        sensorBaseSensorType.setSensorBase(sensorBase);
+        sensorBaseSensorType.setSensorTypesId(1L);
+        sensorBaseSensorType.setSensorBaseEntityId(1L);
+        var sensorEntity = SensorEntity.builder()
+                .id(1L)
+                .uuid(uuid1)
+                .sensorBaseSensorType(sensorBaseSensorType)
+                .location("Living room")
+                .alarmMin(30.0)
+                .alarmMax(19.0)
+                .warningThreshold(1.0)
+                .linearCorrectionValue(0.0)
+                .build();
         when(measurementRepository.findBySensorIdAndTimestampIsAfter(anyLong(), any(Instant.class)))
                 .thenReturn(List.of(measurement));
+        when(sensorService.getSensorById(anyLong())).thenReturn(sensorEntity);
 
         // when
         var result = sut.getSensorMeasurements(1L);
 
         // then
         assertNotNull(result);
-        assertEquals(1L, result.getSensorId());
-        assertEquals("CELSIUS", result.getUnit());
+        assertEquals(1L, result.getBaseId());
+        assertEquals("AZEnvy", result.getBaseName());
         assertEquals(1, result.getData().size());
 
         var chartData = result.getData().get(0);
         assertEquals("CELSIUS", chartData.getName());
+        assertEquals("TEMPERATURE", chartData.getType());
+        assertEquals("SHT30", chartData.getSensorName());
         assertEquals(1, chartData.getSeries().size());
 
         var dataPoint = chartData.getSeries().get(0);

@@ -30,6 +30,10 @@ public class SensorService {
         this.sensorMapper = sensorMapper;
     }
 
+    public SensorEntity getSensorById(Long id) {
+        return sensorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Sensor not found"));
+    }
+
     public List<SensorEntity> getAllSensorEntitiesByUUID(String sensorId) {
         UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
         return sensorRepository.findByUuid(uuid).orElse(new ArrayList<>());

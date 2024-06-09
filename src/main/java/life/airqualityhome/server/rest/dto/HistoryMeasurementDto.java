@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HistoryMeasurementDto {
-    private Long sensorId;
-    private String unit;
+    private Long baseId;
+    private String baseName;
     private List<ChartDataDto> data;
 
     @Data
@@ -22,7 +22,13 @@ public class HistoryMeasurementDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChartDataDto {
+        private String type;
+        private String sensorName;
         private String name;
+        private double minAlarm;
+        private double maxAlarm;
+        private double sensorMinValue;
+        private double sensorMaxValue;
         private List<ChartDataPoint> series;
     }
 
