@@ -1,16 +1,17 @@
 package life.airqualityhome.server.rest.dto;
 
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterConfirmationDto {
+@ToString
+public class ChangePasswordRequestDto {
+    private Long id;
     private String username;
-    private String uuid;
+    private String oldPassword;
+    private String password;
 }

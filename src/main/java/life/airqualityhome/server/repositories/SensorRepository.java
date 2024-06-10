@@ -7,10 +7,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public interface SensorRepository extends RefreshableCRUDRepository<SensorEntity, Long> {
 
-    Optional<List<SensorEntity>> findByUuid(String uuid);
+    Optional<List<SensorEntity>> findByUuid(UUID uuid);
     SensorEntity findFirstById(Long id);
+    Optional<List<SensorEntity>> findByUserEntityId(Long userId);
 }

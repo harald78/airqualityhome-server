@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/register")
+@RequestMapping("/api/app/register")
 public class RegistrationController {
 
     private final RegistrationService registrationService;
@@ -55,24 +55,18 @@ public class RegistrationController {
         return new ResponseEntity<>(sensorBases, HttpStatus.OK);
     }
 
-    @PostMapping("/sensor/confirm")
-    public ResponseEntity<String> confirmSensorRegistration(@RequestBody RegisterConfirmationDto registerConfirmation) {
-        var result = this.registrationService.confirmSensorRegistration(registerConfirmation);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
     @ExceptionHandler
     public ResponseEntity<String> handleException(RegistrationPendingException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleException(NoSensorRegistrationActiveException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleException(SensorRegistrationFailedException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleException(SensorRegistrationFailedException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleException(NoSensorRegistrationActiveException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

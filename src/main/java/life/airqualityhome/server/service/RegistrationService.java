@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -95,7 +94,7 @@ public class RegistrationService {
 
     @Transactional
     public String confirmSensorRegistration(RegisterConfirmationDto registerConfirmation) {
-        UserResponseDto userResponseDto = userService.getUserByUserName(registerConfirmation.getUserName());
+        UserResponseDto userResponseDto = userService.getUserByUserName(registerConfirmation.getUsername());
         Optional<RegisterRequestEntity> registerRequest = registerRequestRepository.findByUserIdAndActiveTrue(userResponseDto.getId());
 
         // Check if sensor is already registered
@@ -106,18 +105,23 @@ public class RegistrationService {
         }
         // Check if registration request is present
         if (registerRequest.isEmpty()) {
-            log.error("No sensor registration active for user {}", registerConfirmation.getUserName());
+            log.error("No sensor registration active for user {}", registerConfirmation.getUsername());
             throw new NoSensorRegistrationActiveException("No sensor registration active for this user");
         }
 
         // handle Sensor Request for Sensor UUID and user
         List<SensorDto> newSensors = sensorService.registerSensorsForUser(registerRequest.get(), userResponseDto.getId(), registerConfirmation.getUuid());
         if (newSensors.isEmpty()) {
-            log.error("Sensor registration failed for user {} and sensor {}", registerConfirmation.getUserName(), registerConfirmation.getUuid());
+            log.error("Sensor registration failed for user {} and sensor {}", registerConfirmation.getUsername(), registerConfirmation.getUuid());
             throw new SensorRegistrationFailedException("Sensor registration failed");
         }
 
-        log.info("Sensor registration success for user {} and sensor {}", registerConfirmation.getUserName(), registerConfirmation.getUuid());
+        // Close active register request
+        var activeRegisterRequest = registerRequest.get();
+        activeRegisterRequest.setActive(false);
+        registerRequestRepository.save(activeRegisterRequest);
+
+        log.info("Sensor registration success for user {} and sensor {}", registerConfirmation.getUsername(), registerConfirmation.getUuid());
         return "OK";
     }
 

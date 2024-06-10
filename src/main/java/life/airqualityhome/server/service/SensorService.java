@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 @Slf4j
@@ -30,18 +30,41 @@ public class SensorService {
         this.sensorMapper = sensorMapper;
     }
 
-    public List<SensorDto> getAllSensorsByUUID(String uuid) {
-        Optional<List<SensorEntity>> sensorList = sensorRepository.findByUuid(uuid);
-        return sensorList.map(l -> l.stream().map(sensorMapper::toDto).toList()).orElse(new ArrayList<>());
+    public SensorEntity getSensorById(Long id) {
+        return sensorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Sensor not found"));
     }
 
-    public List<SensorDto> registerSensorsForUser(RegisterRequestEntity registrationRequest, Long userId, String uuid) {
+    public List<SensorEntity> getAllSensorEntitiesByUUID(String sensorId) {
+        UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
+        return sensorRepository.findByUuid(uuid).orElse(new ArrayList<>());
+    }
+
+    public List<SensorDto> getAllSensorsByUUID(String sensorId) {
+        var sensorList = this.getAllSensorEntitiesByUUID(sensorId);
+        return sensorList.stream().map(sensorMapper::toDto).toList();
+    }
+
+    public List<SensorEntity> getSensorEntitiesForUser(Long userId) {
+        return this.sensorRepository.findByUserEntityId(userId)
+                                           .orElse(new ArrayList<SensorEntity>());
+    }
+
+    public List<SensorDto> getSensorsForUser(Long userId) {
+       return this.getSensorEntitiesForUser(userId)
+           .stream().map(sensorMapper::toDto).toList();
+    }
+
+    public List<SensorDto> registerSensorsForUser(RegisterRequestEntity registrationRequest, Long userId, String sensorId) {
         // Lade SensorBase with SensorTypes
         List<Long> sensorIds = registrationRequest.getSensorBase().getSensorTypes()
                 .stream().map(SensorTypeEntity::getId).toList();
         List<SensorBaseSensorTypeEntity> sensorBaseSensorTypeRelations =
                 sensorBaseSensorTypeRepository.findAllBySensorBaseIdAndSensorTypeIdIn(registrationRequest.getSensorBase().getId(), sensorIds);
         List<SensorEntity> sensorEntities = new ArrayList<>();
+
+        UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
+
+
         for (SensorBaseSensorTypeEntity sensorBaseSensorTypeEntity : sensorBaseSensorTypeRelations) {
             var sensor = SensorEntity.builder()
                     .sensorBaseSensorTypeId(sensorBaseSensorTypeEntity.getId())

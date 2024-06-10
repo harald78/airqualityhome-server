@@ -5,18 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserRequestDto {
-
+public class ChangeUserRequestDto {
     private Long id;
     private String username;
+    private String email;
     private String password;
-    private Set<UserRoleDto> roles;
-
-
 }

@@ -9,6 +9,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     show-sql: true
     properties:
       hibernate:
@@ -24,6 +26,12 @@ logging:
     org:
       flywaydb: DEBUG
       hibernate: INFO
+
+airqualityhome:
+  jwt-secret: TEST-SECRET
+  sensor-api-token-header-name: X-API-TOKEN
+  sensor-api-auth-token: TEST-TOKEN
+  token-expire-millis: 300000 # 5 Minutes
 
 server:
   port: 8080
