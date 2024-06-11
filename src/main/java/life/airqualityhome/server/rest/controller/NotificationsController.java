@@ -1,5 +1,7 @@
 package life.airqualityhome.server.rest.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import life.airqualityhome.server.service.notifications.NotificationService;
 import life.airqualityhome.server.rest.dto.NotificationDto;
@@ -21,8 +23,9 @@ public class NotificationsController {
     }
 
     @GetMapping("/user/{id}")
-    public List<NotificationDto> getUserNotifications(@PathVariable Long id) {
-        return service.getAllUserNotifications(id);
+    public ResponseEntity<List<NotificationDto>> getUserNotifications(@PathVariable Long id) {
+        List<NotificationDto> notifications = service.getAllUserNotifications(id);
+        return new ResponseEntity<>(notifications, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/{id}")

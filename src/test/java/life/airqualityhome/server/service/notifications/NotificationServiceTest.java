@@ -7,17 +7,17 @@ import life.airqualityhome.server.rest.dto.mapper.NotificationMapper;
 import life.airqualityhome.server.rest.dto.mapper.NotificationMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
     @Mock
@@ -29,7 +29,6 @@ public class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        openMocks(this);
         this.notificationMapper = new NotificationMapperImpl();
         this.sut = new NotificationService(notificationCRUDRepository, notificationMapper);
     }

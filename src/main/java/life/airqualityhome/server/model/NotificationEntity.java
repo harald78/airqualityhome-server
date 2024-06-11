@@ -21,8 +21,7 @@ public class NotificationEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private UserEntity userEntity;
 
-    //
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     @ManyToOne
