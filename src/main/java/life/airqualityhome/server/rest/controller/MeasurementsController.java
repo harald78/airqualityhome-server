@@ -23,13 +23,13 @@ public class MeasurementsController {
         this.measurementService = measurementService;
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LatestMeasurementDto>> getUserMeasurements(@PathVariable String id) {
         var measurements = measurementService.getUserMeasurements(id);
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @GetMapping("/sensor/{id}")
+    @GetMapping(value = "/sensor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HistoryMeasurementDto> getSensorMeasurements(@PathVariable Long id) {
         var measurements = measurementService.getSensorMeasurements(id);
         return new ResponseEntity<>(measurements, HttpStatus.OK);
