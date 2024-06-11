@@ -156,8 +156,9 @@ class MeasurementServiceImplTest {
         assertEquals(1, result.getData().size());
 
         var chartData = result.getData().get(0);
-        assertEquals("CELSIUS", chartData.getName());
+        assertEquals("TEMPERATURE", chartData.getName());
         assertEquals("TEMPERATURE", chartData.getType());
+        assertEquals("CELSIUS", chartData.getUnit());
         assertEquals("SHT30", chartData.getSensorName());
         assertEquals(1, chartData.getSeries().size());
 

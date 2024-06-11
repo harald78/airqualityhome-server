@@ -25,6 +25,7 @@ public class HistoryMeasurementDto {
         private String type;
         private String sensorName;
         private String name;
+        private String unit;
         private double minAlarm;
         private double maxAlarm;
         private double sensorMinValue;

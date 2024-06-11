@@ -100,7 +100,8 @@ public class MeasurementServiceImpl implements MeasurementService {
 
         List<HistoryMeasurementDto.ChartDataDto> chartDataDto = groupedData.entrySet().stream()
                 .map(entry -> new HistoryMeasurementDto.ChartDataDto(sensor.getSensorBaseSensorType().getSensorType().getType().name(),
-                        sensor.getSensorBaseSensorType().getSensorType().getName(), entry.getKey(),
+                        sensor.getSensorBaseSensorType().getSensorType().getName(), sensor.getSensorBaseSensorType().getSensorType().getType().name(),
+                        entry.getKey(),
                         sensor.getAlarmMin(), sensor.getAlarmMax(), sensor.getSensorBaseSensorType().getSensorType().getMinValue(),
                         sensor.getSensorBaseSensorType().getSensorType().getMaxValue(),
                         entry.getValue()))
