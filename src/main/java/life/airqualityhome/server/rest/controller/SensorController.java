@@ -23,13 +23,13 @@ public class SensorController {
         this.measurementService = measurementService;
     }
 
-    @PostMapping("/register/confirm")
+    @PostMapping(value = "/register/confirm", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> confirmSensorRegistration(@RequestBody RegisterConfirmationDto registerConfirmation) {
         var result = this.registrationService.confirmSensorRegistration(registerConfirmation);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/measurements", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/measurements", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> addMeasurement(@RequestBody BaseRawDataDto rawDataDto) {
         var result = this.measurementService.addMeasurements(rawDataDto);
         if (result) {

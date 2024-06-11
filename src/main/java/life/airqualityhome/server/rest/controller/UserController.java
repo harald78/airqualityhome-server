@@ -7,6 +7,7 @@ import life.airqualityhome.server.service.jwt.JwtService;
 import life.airqualityhome.server.service.jwt.RefreshTokenService;
 import life.airqualityhome.server.service.user.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
 
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDto> saveUser(@RequestBody ChangeUserRequestDto userRequest) {
         try {
             UserResponseDto userResponse = userService.saveUser(userRequest);
@@ -38,7 +39,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/save-password")
+    @PostMapping(value = "/save-password", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDto> saveUser(@RequestBody ChangePasswordRequestDto userRequest) {
         try {
             UserResponseDto userResponse = userService.savePassword(userRequest);
@@ -48,7 +49,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/profile")
+    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDto> getUserProfile() {
         try {
             UserResponseDto userResponse = userService.getUser();
@@ -58,7 +59,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
+    @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDto> logoutUser() {
         try {
             UserResponseDto userResponse = userService.logoutUser();
@@ -68,7 +69,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JwtResponseDto> AuthenticateAndGetToken(@RequestBody AuthRequestDto authRequestDTO){
         boolean authenticated = this.userService.isAuthenticated(authRequestDTO.getUsername(), authRequestDTO.getPassword());
         if(authenticated){
@@ -83,7 +84,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/refreshToken")
+    @PostMapping(value = "/refreshToken", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JwtResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDTO){
         return refreshTokenService.findByToken(refreshTokenRequestDTO.getToken())
                 .map(refreshTokenService::verifyExpiration)
