@@ -1,6 +1,5 @@
 package life.airqualityhome.server.rest.controller;
 
-import life.airqualityhome.server.rest.dto.RegisterConfirmationDto;
 import life.airqualityhome.server.rest.dto.RegisterRequestDto;
 import life.airqualityhome.server.rest.dto.SensorBaseDto;
 import life.airqualityhome.server.rest.exceptions.NoSensorRegistrationActiveException;
@@ -8,6 +7,7 @@ import life.airqualityhome.server.rest.exceptions.RegistrationPendingException;
 import life.airqualityhome.server.rest.exceptions.SensorRegistrationFailedException;
 import life.airqualityhome.server.service.RegistrationService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,21 +25,21 @@ public class RegistrationController {
     }
 
     @PreAuthorize("hasAuthority('APP_WRITE')")
-    @PostMapping("/sensor")
+    @PostMapping(value = "/sensor", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterRequestDto> addSensorBaseRegistration(@RequestBody RegisterRequestDto registerRequest) {
         RegisterRequestDto registerRequestDto = registrationService.registerSensorBase(registerRequest);
         return new ResponseEntity<>(registerRequestDto, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('APP_WRITE')")
-    @PostMapping("/sensor/cancel")
+    @PostMapping(value = "/sensor/cancel", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterRequestDto> cancelSensorBaseRegistration(@RequestBody RegisterRequestDto registerRequest) {
         RegisterRequestDto registerRequestDto = registrationService.cancelRegisterRequest(registerRequest);
         return new ResponseEntity<>(registerRequestDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('APP_READ')")
-    @GetMapping("/requests/{id}")
+    @GetMapping(value = "/requests/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterRequestDto> getRegisterRequestByUserId(@PathVariable String id) {
         RegisterRequestDto sensorRegistrationsByUser = registrationService.getRegisterRequestByUserId(Long.parseLong(id));
         if (sensorRegistrationsByUser.getId() == null) {
@@ -49,7 +49,7 @@ public class RegistrationController {
     }
 
     @PreAuthorize("hasAuthority('APP_READ')")
-    @GetMapping("/sensorBase")
+    @GetMapping(value = "/sensorBase", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SensorBaseDto>> getAvailableSensorBases() {
         final var sensorBases = this.registrationService.getAvailableSensorBases();
         return new ResponseEntity<>(sensorBases, HttpStatus.OK);
