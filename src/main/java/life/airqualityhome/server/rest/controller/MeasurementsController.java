@@ -1,5 +1,6 @@
 package life.airqualityhome.server.rest.controller;
 
+import jakarta.websocket.server.PathParam;
 import life.airqualityhome.server.rest.dto.HistoryMeasurementDto;
 import life.airqualityhome.server.rest.dto.LatestMeasurementDto;
 import life.airqualityhome.server.rest.dto.BaseRawDataDto;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -30,10 +32,9 @@ public class MeasurementsController {
     }
 
     @GetMapping(value = "/sensor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HistoryMeasurementDto> getSensorMeasurements(@PathVariable Long id) {
-        var measurements = measurementService.getSensorMeasurements(id);
+    public ResponseEntity<HistoryMeasurementDto> getSensorMeasurements(@PathVariable Long id, @PathParam("from") Instant from, @PathParam("to") Instant to) {
+        var measurements = measurementService.getSensorMeasurements(id, from, to);
         return new ResponseEntity<>(measurements, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/user/{id}")

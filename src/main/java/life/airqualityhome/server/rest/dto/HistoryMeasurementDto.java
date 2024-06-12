@@ -15,6 +15,7 @@ import java.util.List;
 public class HistoryMeasurementDto {
     private Long baseId;
     private String baseName;
+    private String location;
     private List<ChartDataDto> data;
 
     @Data

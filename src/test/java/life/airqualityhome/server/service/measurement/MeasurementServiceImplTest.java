@@ -20,6 +20,7 @@ import org.mockito.stubbing.Answer;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -142,12 +143,12 @@ class MeasurementServiceImplTest {
                 .warningThreshold(1.0)
                 .linearCorrectionValue(0.0)
                 .build();
-        when(measurementRepository.findBySensorIdAndTimestampIsAfter(anyLong(), any(Instant.class)))
+        when(measurementRepository.findBySensorIdAndTimestampIsBetween(anyLong(), any(Instant.class), any(Instant.class)))
                 .thenReturn(List.of(measurement));
         when(sensorService.getSensorById(anyLong())).thenReturn(sensorEntity);
 
         // when
-        var result = sut.getSensorMeasurements(1L);
+        var result = sut.getSensorMeasurements(1L, Instant.now().minus(1, ChronoUnit.DAYS), Instant.now());
 
         // then
         assertNotNull(result);
