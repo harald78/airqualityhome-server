@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface NotificationCRUDRepository extends CrudRepository<NotificationEntity, Long>{
     Optional<List<NotificationEntity>> findAllByUserId(Long userId);
-    Optional<NotificationEntity> findByUserIdAndMeasurementEntityIdAndCreatedAfter(Long userId, Long measurementId, Instant timestamp);
+    Optional<NotificationEntity> findByUserIdAndMeasurementEntity_SensorEntity_IdAndCreatedAfter(Long userId, Long sensorId, Instant timestamp);
 }

@@ -60,7 +60,7 @@ public class NotificationService {
         var userId = event.getViolationEntities().get(0).getUserId(); // Get userId from first element
         var timestamp = event.getTimestamp().minus(maxNotificationInterval, ChronoUnit.MINUTES);
         event.getViolationEntities().forEach(mv -> {
-            this.repository.findByUserIdAndMeasurementEntityIdAndCreatedAfter(userId, mv.getMeasurementEntityId(), timestamp)
+            this.repository.findByUserIdAndMeasurementEntity_SensorEntity_IdAndCreatedAfter(userId, mv.getSensorId(), timestamp)
                 .ifPresentOrElse(notification -> log.info("Measurement violation for {}. Will not create notification because last notification was {}",
                                                 mv.getSensorEntity().getSensorBaseSensorType().getSensorType().getType().name(), notification.getCreated().toString()),
                                  () -> { var userNotification = NotificationEntity.builder()
