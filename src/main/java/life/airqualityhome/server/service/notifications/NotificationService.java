@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -53,6 +56,7 @@ public class NotificationService {
         if (userNotification.isPresent()) {
             var notification = userNotification.get();
             notification.setAcknowledged(true);
+            notification.setReadAt(Instant.now());
             return this.mapper.toDto(this.repository.save(notification));
         } else {
             throw new IllegalStateException("User notification not found");
