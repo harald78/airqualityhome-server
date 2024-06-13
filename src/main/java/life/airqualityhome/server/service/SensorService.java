@@ -30,8 +30,12 @@ public class SensorService {
         this.sensorMapper = sensorMapper;
     }
 
-    public SensorEntity getSensorById(Long id) {
+    public SensorEntity getSensorEntityById(Long id) {
         return sensorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Sensor not found"));
+    }
+
+    public SensorDto getSensorDtoById(Long id) {
+        return this.sensorMapper.toDto(this.getSensorEntityById(id));
     }
 
     public List<SensorEntity> getAllSensorEntitiesByUUID(String sensorId) {
@@ -46,12 +50,38 @@ public class SensorService {
 
     public List<SensorEntity> getSensorEntitiesForUser(Long userId) {
         return this.sensorRepository.findByUserEntityId(userId)
-                                           .orElse(new ArrayList<SensorEntity>());
+                                           .orElse(new ArrayList<>());
     }
 
     public List<SensorDto> getSensorsForUser(Long userId) {
        return this.getSensorEntitiesForUser(userId)
            .stream().map(sensorMapper::toDto).toList();
+    }
+
+    public List<SensorEntity> getSensorsByBaseIdAndUserId(Long baseId, Long userId) {
+        return this.sensorRepository.findByUserEntityIdAndSensorBaseSensorType_SensorBaseEntityId(userId, baseId);
+    }
+
+    public SensorDto saveSensorSettings(SensorDto sensorDto) {
+        var currentEntity = this.getSensorEntityById(sensorDto.getId());
+
+        // Maybe change location for all sensors related to a given base
+        if (!currentEntity.getLocation().equals(sensorDto.getLocation())) {
+            var otherEntities = this.sensorRepository.findByUserEntityIdAndSensorBaseSensorType_SensorBaseEntityId(sensorDto.getUserId(), sensorDto.getSensorBaseSensorTypeId());
+            otherEntities.forEach(e -> {
+                e.setLocation(sensorDto.getLocation());
+                this.sensorRepository.save(e);
+            });
+        }
+
+        currentEntity.setLocation(sensorDto.getLocation());
+        currentEntity.setAlarmMax(sensorDto.getAlarmMax());
+        currentEntity.setAlarmMin(sensorDto.getAlarmMin());
+        currentEntity.setLinearCorrectionValue(sensorDto.getLinearCorrectionValue());
+        currentEntity.setAlarmActive(sensorDto.isAlarmActive());
+        currentEntity.setWarningThreshold(sensorDto.getWarningThreshold());
+        var updatedEntity = this.sensorRepository.save(currentEntity);
+        return this.sensorMapper.toDto(updatedEntity);
     }
 
     public List<SensorDto> registerSensorsForUser(RegisterRequestEntity registrationRequest, Long userId, String sensorId) {
