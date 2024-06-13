@@ -24,9 +24,12 @@ public class NotificationEntity extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "measurement_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "measurement_id", nullable = false, insertable = false, updatable = false)
     private MeasurementEntity measurementEntity;
+
+    @Column(name = "measurement_id", nullable = false)
+    private Long measurementEntityId;
 
     private String message;
 

@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 public class SensorDto {
     private long id;
     private String uuid;
+    private String sensorBase;
+    private String sensorType;
+    private String sensorName;
     private Long sensorBaseSensorTypeId;
     private Long userId;
     private String location;

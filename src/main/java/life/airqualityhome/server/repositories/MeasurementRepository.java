@@ -14,7 +14,7 @@ public interface MeasurementRepository extends RefreshableCRUDRepository<Measure
 
     MeasurementEntity findFirstById(Long id);
     Optional<MeasurementEntity> findTopBySensorEntityOrderByTimestampDesc(SensorEntity sensorEntity);
-    List<MeasurementEntity> findBySensorIdAndTimestampIsBetween(Long id, Instant from, Instant to);
+    List<MeasurementEntity> findBySensorIdAndTimestampIsBetweenOrderByCreatedAsc(Long id, Instant from, Instant to);
 
 }
 
