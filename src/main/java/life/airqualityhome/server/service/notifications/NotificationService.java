@@ -87,14 +87,13 @@ public class NotificationService {
         var alarmValue = String.format("%.2f", mve.getAlarmValue());
         var diff = Math.abs(mve.getAlarmValue() - mve.getCorrectedValue());
         var formattedDiff = String.format("%.2f", diff);
-        var location = sensorEntity.getLocation();
         return switch (sensorEntity.getSensorBaseSensorType().getSensorType().getType()) {
-            case TEMPERATURE -> type + " temperature " + alarmValue + " °C violated by " + formattedDiff + " degrees in " + location;
-            case HUMIDITY -> type + " humidity " + alarmValue + " % violated by " + formattedDiff + " percent in " + location;
-            case PRESSURE -> type + " pressure " + alarmValue + " hPa violated by " + formattedDiff + " hPa in" + location;
-            case GAS -> type + " gas " + alarmValue + " ppm violated by " + formattedDiff + " ppm in " + location;
-            case PARTICLE -> type + " particle " + alarmValue + " ppm violated by " + formattedDiff + " ppm in " + location;
-            case LIGHT -> type + " light " + alarmValue + " lx violated by " + formattedDiff + " lx in " + location;
+            case TEMPERATURE -> type + " temperature " + alarmValue + " °C violated by " + formattedDiff + " degrees";
+            case HUMIDITY -> type + " humidity " + alarmValue + " % violated by " + formattedDiff + " percent";
+            case PRESSURE -> type + " pressure " + alarmValue + " hPa violated by " + formattedDiff + " hPa";
+            case GAS -> type + " gas " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case PARTICLE -> type + " particle " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case LIGHT -> type + " light " + alarmValue + " lx violated by " + formattedDiff + " lx";
         };
     }
 }

@@ -27,4 +27,12 @@ public class NotificationDto implements Serializable {
     private Instant readAt;
 
     private String username;
+
+    private String baseName;
+
+    private String location;
+
+    private String sensorType;
+
+    private String sensorName;
 }
