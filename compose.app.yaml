@@ -1,0 +1,28 @@
+services:
+  airqualityhome:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airqualityhome:latest
+    environment:
+      - MARIADB_DATABASE=${mariaDB_database}
+      - MARIADB_PASSWORD=${mariaDB_user_password}
+      - MARIADB_ROOT_PASSWORD=${flyway_user_password}
+      - MARIADB_USER=${mariaDB_user}
+      - MARIADB_URL=jdbc:mariadb://mariadb:3306/airqualityhome
+      - SPRING_PROFILES_ACTIVE=prod
+      - MARIADB_USER_PASSWORD=${mariaDB_user_password}
+      - TOKEN_EXPIRE_MILLIS=300000
+      - JWT_SECRET=${jwt_secret}
+      - SENSOR_API_AUTH_TOKEN=${sensor_api_auth_token}
+      - SENSOR_API_TOKEN_HEADER_NAME=${sensor_api_token_header_name}
+      - FLYWAY_USER=admin
+      - FLYWAY_USER_PASSWORD=${flyway_user_password}
+    ports:
+      - "8080:8080"
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge

@@ -1,38 +1,17 @@
-version: '3.7'
 services:
   mariadb:
     image: 'mariadb:11.2'
     environment:
-      - 'MARIADB_DATABASE=${mariaDB_database}'
-      - 'MARIADB_PASSWORD=${mariaDB_user_password}'
-      - 'MARIADB_ROOT_PASSWORD=${flyway_user_password}'
-      - 'MARIADB_USER=${mariaDB_user}'
+      - MARIADB_DATABASE=${mariaDB_database}
+      - MARIADB_PASSWORD=${mariaDB_user_password}
+      - MARIADB_ROOT_PASSWORD=${flyway_user_password}
+      - MARIADB_USER=${mariaDB_user}
     ports:
       - '3306:3306'
+    hostname: mariadb
     networks:
-      - monitoring
-
-  prometheus:
-    image: prom/prometheus:v2.44.0
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - monitoring
-
-  grafana:
-    image: grafana/grafana:9.5.2
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-    networks:
-      - monitoring
+      - local
 
 networks:
-  monitoring:
+  local:
     driver: bridge
