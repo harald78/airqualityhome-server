@@ -193,9 +193,10 @@ public class MeasurementServiceImpl implements MeasurementService {
 
         AtomicReference<Instant> created = new AtomicReference<>(measurementEntities.get(0).getCreated());
         var firstId = measurementEntities.get(0).getId();
+        var lastId = measurementEntities.get(measurementEntities.size() - 1).getId();
         return measurementEntities.stream()
             .filter(m -> {
-                if (firstId == m.getId() || m.getCreated().isAfter(created.get().plus(this.applicationProperties.getMaxSensorMeasurementIntervalMinutes(), ChronoUnit.MINUTES))) {
+                if (firstId == m.getId() || lastId == m.getId() || m.getCreated().isAfter(created.get().plus(this.applicationProperties.getMaxSensorMeasurementIntervalMinutes(), ChronoUnit.MINUTES))) {
                     created.set(m.getCreated());
                     return true;
                 }
