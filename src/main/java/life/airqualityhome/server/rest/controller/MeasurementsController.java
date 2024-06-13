@@ -38,9 +38,9 @@ public class MeasurementsController {
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/base/{id}/{userid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HistoryMeasurementDto> getBaseMeasurements(@PathVariable Long id, @PathVariable Long userid, @PathParam("from") Instant from, @PathParam("to") Instant to) {
-        var measurements = measurementService.getBaseMeasurements(userid, id, from, to);
+    @GetMapping(value = "/base/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<HistoryMeasurementDto> getBaseMeasurements(@PathVariable Long id, @PathParam("from") Instant from, @PathParam("to") Instant to) {
+        var measurements = measurementService.getBaseMeasurements(id, from, to);
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 

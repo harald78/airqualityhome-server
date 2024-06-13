@@ -151,8 +151,9 @@ public class MeasurementServiceImpl implements MeasurementService {
     }
 
     @Override
-    public HistoryMeasurementDto getBaseMeasurements(final Long userId, final Long baseId, final Instant from, final Instant to) {
-        List<SensorEntity> sensorEntities = this.sensorService.getSensorsByBaseIdAndUserId(baseId, userId);
+    public HistoryMeasurementDto getBaseMeasurements(final Long sensorId, final Instant from, final Instant to) {
+        SensorEntity sensorEntity = this.sensorService.getSensorEntityById(sensorId);
+        List<SensorEntity> sensorEntities = this.sensorService.getSensorsByBaseIdAndUserId(sensorEntity.getSensorBaseSensorType().getSensorBaseEntityId(), sensorEntity.getUserId());
         if (sensorEntities.isEmpty()) {
             throw new NoContentFoundException("No content found");
         }
