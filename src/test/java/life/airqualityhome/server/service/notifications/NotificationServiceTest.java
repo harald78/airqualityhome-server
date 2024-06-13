@@ -6,6 +6,7 @@ import life.airqualityhome.server.repositories.NotificationCRUDRepository;
 import life.airqualityhome.server.rest.dto.NotificationDto;
 import life.airqualityhome.server.rest.dto.mapper.NotificationMapper;
 import life.airqualityhome.server.rest.dto.mapper.NotificationMapperImpl;
+import life.airqualityhome.server.service.SensorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,9 @@ public class NotificationServiceTest {
     @Mock
     NotificationCRUDRepository notificationCRUDRepository;
 
+    @Mock
+    SensorService sensorService;
+
     NotificationMapper notificationMapper;
 
     ApplicationProperties applicationProperties;
@@ -37,7 +41,7 @@ public class NotificationServiceTest {
         this.notificationMapper = new NotificationMapperImpl();
         this.applicationProperties = new ApplicationProperties();
         this.applicationProperties.setMaxNotificationIntervalMinutes(10);
-        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties);
+        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties, sensorService);
     }
 
     @Test

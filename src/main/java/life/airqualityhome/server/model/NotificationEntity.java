@@ -31,10 +31,13 @@ public class NotificationEntity extends BaseEntity {
     @Column(name = "measurement_id", nullable = false)
     private Long measurementEntityId;
 
+    @Column(name="message")
     private String message;
 
-    private Boolean read;
+    @Column(name="acknowledged")
+    private Boolean acknowledged;
 
+    @Column(name="read_at")
     private Instant readAt;
 
 }
