@@ -88,8 +88,8 @@ public class NotificationService {
         var diff = Math.abs(mve.getAlarmValue() - mve.getCorrectedValue());
         var formattedDiff = String.format("%.2f", diff);
         return switch (sensorEntity.getSensorBaseSensorType().getSensorType().getType()) {
-            case TEMPERATURE -> type + " temperature " + alarmValue + " °C violated by " + formattedDiff + " degrees";
-            case HUMIDITY -> type + " humidity " + alarmValue + " % violated by " + formattedDiff + " percent";
+            case TEMPERATURE -> type + " temperature " + alarmValue + " °C violated by " + formattedDiff + " °C";
+            case HUMIDITY -> type + " humidity " + alarmValue + " % violated by " + formattedDiff + " %";
             case PRESSURE -> type + " pressure " + alarmValue + " hPa violated by " + formattedDiff + " hPa";
             case GAS -> type + " gas " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case PARTICLE -> type + " particle " + alarmValue + " ppm violated by " + formattedDiff + " ppm";

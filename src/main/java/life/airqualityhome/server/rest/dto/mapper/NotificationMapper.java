@@ -17,5 +17,6 @@ public interface NotificationMapper {
     @Mapping(target = "sensorType", source = "measurementEntity.sensorEntity.sensorBaseSensorType.sensorType.type")
     @Mapping(target = "sensorName", source = "measurementEntity.sensorEntity.sensorBaseSensorType.sensorType.name")
     @Mapping(target = "location", source = "measurementEntity.sensorEntity.location")
+    @Mapping(target = "timestamp", source = "measurementEntity.timestamp")
     NotificationDto toDto(NotificationEntity notification);
 }

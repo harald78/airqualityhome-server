@@ -35,4 +35,6 @@ public class NotificationDto implements Serializable {
     private String sensorType;
 
     private String sensorName;
+
+    private Instant timestamp;
 }
