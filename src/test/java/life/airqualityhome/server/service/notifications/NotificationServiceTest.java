@@ -1,5 +1,6 @@
 package life.airqualityhome.server.service.notifications;
 
+import life.airqualityhome.server.config.ApplicationProperties;
 import life.airqualityhome.server.model.NotificationEntity;
 import life.airqualityhome.server.repositories.NotificationCRUDRepository;
 import life.airqualityhome.server.rest.dto.NotificationDto;
@@ -12,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -25,12 +28,16 @@ public class NotificationServiceTest {
 
     NotificationMapper notificationMapper;
 
+    ApplicationProperties applicationProperties;
+
     NotificationService sut;
 
     @BeforeEach
     void setUp() {
         this.notificationMapper = new NotificationMapperImpl();
-        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper);
+        this.applicationProperties = new ApplicationProperties();
+        this.applicationProperties.setMaxNotificationIntervalMinutes(10);
+        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties);
     }
 
     @Test
@@ -39,7 +46,7 @@ public class NotificationServiceTest {
         Long userId = 1L;
 
         // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(List.of());
+        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.empty());
         var result = sut.getAllUserNotifications(userId);
 
         // then
@@ -57,7 +64,7 @@ public class NotificationServiceTest {
         );
 
         // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(notificationEntities);
+        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.of(notificationEntities));
         var result = sut.getAllUserNotifications(userId);
 
         // then

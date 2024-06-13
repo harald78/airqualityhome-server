@@ -20,4 +20,8 @@ public class ApplicationProperties {
     private String sensorApiTokenHeaderName;
 
     private String sensorApiAuthToken;
+
+    private Integer maxNotificationIntervalMinutes;
+
+    private Integer maxSensorMeasurementIntervalMinutes;
 }

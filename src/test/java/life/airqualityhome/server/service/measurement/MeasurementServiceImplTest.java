@@ -1,11 +1,13 @@
 package life.airqualityhome.server.service.measurement;
 
+import life.airqualityhome.server.config.ApplicationProperties;
 import life.airqualityhome.server.model.MeasurementEntity;
 import life.airqualityhome.server.model.SensorBaseEntity;
 import life.airqualityhome.server.model.SensorBaseSensorTypeEntity;
 import life.airqualityhome.server.model.SensorEntity;
 import life.airqualityhome.server.model.SensorTypeEntity;
 import life.airqualityhome.server.repositories.MeasurementRepository;
+import life.airqualityhome.server.repositories.MeasurementViolationRepository;
 import life.airqualityhome.server.rest.dto.SensorRawDataDto;
 import life.airqualityhome.server.rest.dto.BaseRawDataDto;
 import life.airqualityhome.server.service.SensorService;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,13 +39,22 @@ class MeasurementServiceImplTest {
     private SensorService sensorService;
 
     @Mock
+    private MeasurementViolationRepository violationRepository;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
     private MeasurementRepository measurementRepository;
     private MeasurementServiceImpl sut;
+    private ApplicationProperties applicationProperties;
 
 
     @BeforeEach
     void setUp() {
-        this.sut = new MeasurementServiceImpl(sensorService, measurementRepository);
+        this.applicationProperties = new ApplicationProperties();
+        this.applicationProperties.setMaxSensorMeasurementIntervalMinutes(10);
+        this.sut = new MeasurementServiceImpl(sensorService, measurementRepository, violationRepository, applicationEventPublisher, this.applicationProperties);
     }
 
     @Test
@@ -143,9 +155,9 @@ class MeasurementServiceImplTest {
                 .warningThreshold(1.0)
                 .linearCorrectionValue(0.0)
                 .build();
-        when(measurementRepository.findBySensorIdAndTimestampIsBetween(anyLong(), any(Instant.class), any(Instant.class)))
+        when(measurementRepository.findBySensorIdAndTimestampIsBetweenOrderByCreatedAsc(anyLong(), any(Instant.class), any(Instant.class)))
                 .thenReturn(List.of(measurement));
-        when(sensorService.getSensorById(anyLong())).thenReturn(sensorEntity);
+        when(sensorService.getSensorEntityById(anyLong())).thenReturn(sensorEntity);
 
         // when
         var result = sut.getSensorMeasurements(1L, Instant.now().minus(1, ChronoUnit.DAYS), Instant.now());
@@ -157,7 +169,7 @@ class MeasurementServiceImplTest {
         assertEquals(1, result.getData().size());
 
         var chartData = result.getData().get(0);
-        assertEquals("TEMPERATURE", chartData.getName());
+        assertEquals("TEMPERATURE (SHT30)", chartData.getName());
         assertEquals("TEMPERATURE", chartData.getType());
         assertEquals("CELSIUS", chartData.getUnit());
         assertEquals("SHT30", chartData.getSensorName());
