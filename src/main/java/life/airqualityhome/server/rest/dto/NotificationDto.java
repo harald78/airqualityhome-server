@@ -22,7 +22,7 @@ public class NotificationDto implements Serializable {
 
     private String message;
 
-    private Boolean read;
+    private Boolean acknowledged;
 
     private Instant readAt;
 
