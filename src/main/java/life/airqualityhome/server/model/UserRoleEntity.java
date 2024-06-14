@@ -1,17 +1,15 @@
 package life.airqualityhome.server.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
-@Data
-@ToString
+@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "role")
+@Table(name = "aq_role")
 public class UserRoleEntity extends BaseEntity {
 
     @Id

@@ -13,7 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix="airqualityhome")
 public class ApplicationProperties {
 
-    private String name;
-
     private String jwtSecret;
+
+    private String tokenExpireMillis;
+
+    private String sensorApiTokenHeaderName;
+
+    private String sensorApiAuthToken;
+
+    private Integer maxNotificationIntervalMinutes;
+
+    private Integer maxSensorMeasurementIntervalMinutes;
 }

@@ -3,7 +3,7 @@ package life.airqualityhome.server.service.jwt;
 import life.airqualityhome.server.model.RefreshTokenEntity;
 import life.airqualityhome.server.repositories.RefreshTokenRepository;
 import life.airqualityhome.server.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import life.airqualityhome.server.rest.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,19 +13,24 @@ import java.util.UUID;
 @Service
 public class RefreshTokenService {
 
-    @Autowired
     RefreshTokenRepository refreshTokenRepository;
 
-    @Autowired
     UserRepository userRepository;
 
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.userRepository = userRepository;
+    }
+
     public RefreshTokenEntity createRefreshToken(String username) {
-        RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
-                .userInfo(userRepository.findByUsername(username))
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(600000))
-                .build();
-        return refreshTokenRepository.save(refreshToken);
+        return userRepository.findByUsername(username)
+            .map(user -> RefreshTokenEntity.builder()
+                                           .userInfo(user)
+                                           .token(UUID.randomUUID().toString())
+                                           .expiryDate(Instant.now().plusMillis(1000 * 60 * 60 * 12)) // max login validity = 12h
+                                           .build())
+            .map(token -> refreshTokenRepository.save(token))
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public Optional<RefreshTokenEntity> findByToken(String token) {

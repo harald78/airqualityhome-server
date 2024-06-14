@@ -1,9 +1,17 @@
 package life.airqualityhome.server.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.Instant;
 
 @Entity
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name="sensor_type")
 public class SensorTypeEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +20,7 @@ public class SensorTypeEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private enum Type {
+    public enum Type {
         TEMPERATURE, HUMIDITY, PRESSURE, GAS, PARTICLE, LIGHT;
     }
 

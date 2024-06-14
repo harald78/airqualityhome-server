@@ -1,7 +1,7 @@
 USE airqualityhome;
 
-CREATE TABLE IF NOT EXISTS `sensor` (
-    `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY, # https://mariadb.com/kb/en/guiduuid-performance/
+CREATE TABLE IF NOT EXISTS airqualityhome.`sensor` (
+    `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `uuid` UUID NOT NULL,
     `sensor_base_sensor_type_id` bigint NOT NULL,
     `user_id` bigint NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `sensor` (
     `alarm_min`double,
     `created` timestamp NOT NULL,
     `updated` timestamp NOT NULL,
-    FOREIGN KEY (sensor_base_sensor_type_id) REFERENCES airqualityhome.sensor_base_sensor_type(id),
-    FOREIGN KEY (user_id) REFERENCES airqualityhome.user(id),
-    UNIQUE (uuid, sensor_base_sensor_type_id)
-);
+    CONSTRAINT fk_1 FOREIGN KEY (sensor_base_sensor_type_id) REFERENCES airqualityhome.sensor_base_sensor_type(id),
+    CONSTRAINT fk_2 FOREIGN KEY (user_id) REFERENCES airqualityhome.aq_user(id),
+    CONSTRAINT uc_uuid_sensor_base_sensor_type UNIQUE (uuid, sensor_base_sensor_type_id)
+) ENGINE=InnoDB;
 

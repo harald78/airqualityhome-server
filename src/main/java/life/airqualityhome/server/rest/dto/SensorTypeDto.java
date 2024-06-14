@@ -1,6 +1,17 @@
 package life.airqualityhome.server.rest.dto;
 
-public class SensorTypeDto {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class SensorTypeDto implements Serializable {
 
     private Long id;
 

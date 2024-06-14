@@ -1,6 +1,6 @@
 USE airqualityhome;
 
-CREATE TABLE IF NOT EXISTS `notification` (
+CREATE TABLE IF NOT EXISTS airqualityhome.`notification` (
     `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` bigint NOT NULL,
     `measurement_id` bigint NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `notification` (
     `read_at` timestamp,
     `created` timestamp NOT NULL,
     `updated` timestamp NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES airqualityhome.user(id),
-    FOREIGN KEY (measurement_id) REFERENCES airqualityhome.measurement(id)
+    CONSTRAINT notification_fk_1 FOREIGN KEY (user_id) REFERENCES airqualityhome.aq_user(id),
+    CONSTRAINT notification_fk_2 FOREIGN KEY (measurement_id) REFERENCES airqualityhome.measurement(id)
 );
 
