@@ -82,7 +82,7 @@ public class NotificationService {
         });
     }
 
-    private String getViolationMessage(MeasurementViolationEntity mve, SensorEntity sensorEntity) {
+    public String getViolationMessage(MeasurementViolationEntity mve, SensorEntity sensorEntity) {
         var type = mve.getType().name();
         var alarmValue = String.format("%.2f", mve.getAlarmValue());
         var diff = Math.abs(mve.getAlarmValue() - mve.getCorrectedValue());

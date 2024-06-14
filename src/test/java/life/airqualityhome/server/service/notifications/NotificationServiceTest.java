@@ -1,79 +1,169 @@
 package life.airqualityhome.server.service.notifications;
 
 import life.airqualityhome.server.config.ApplicationProperties;
+import life.airqualityhome.server.model.MeasurementViolationEntity;
 import life.airqualityhome.server.model.NotificationEntity;
+import life.airqualityhome.server.model.SensorEntity;
+import life.airqualityhome.server.model.event.MeasurementViolationEvent;
 import life.airqualityhome.server.repositories.NotificationCRUDRepository;
 import life.airqualityhome.server.rest.dto.NotificationDto;
 import life.airqualityhome.server.rest.dto.mapper.NotificationMapper;
-import life.airqualityhome.server.rest.dto.mapper.NotificationMapperImpl;
 import life.airqualityhome.server.service.SensorService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationServiceTest {
+class NotificationServiceTest {
 
     @Mock
-    NotificationCRUDRepository notificationCRUDRepository;
+    private NotificationCRUDRepository repository;
 
     @Mock
-    SensorService sensorService;
+    private NotificationMapper mapper;
 
-    NotificationMapper notificationMapper;
+    @Mock
+    private SensorService sensorService;
 
-    ApplicationProperties applicationProperties;
+    @Mock
+    private ApplicationProperties applicationProperties;
 
-    NotificationService sut;
+    @InjectMocks
+    private NotificationService notificationService;
 
-    @BeforeEach
-    void setUp() {
-        this.notificationMapper = new NotificationMapperImpl();
-        this.applicationProperties = new ApplicationProperties();
-        this.applicationProperties.setMaxNotificationIntervalMinutes(10);
-        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties, sensorService);
+    @Nested
+    class GetAllUserNotificationsTests {
+        @Test
+        void getAllUserNotifications_ShouldReturnNotificationDtoList() {
+            Long userId = 1L;
+            NotificationEntity notificationEntity = new NotificationEntity();
+            NotificationDto notificationDto = new NotificationDto();
+
+            when(repository.findAllByUserId(userId)).thenReturn(Optional.of(List.of(notificationEntity)));
+            when(mapper.toDto(notificationEntity)).thenReturn(notificationDto);
+
+            List<NotificationDto> result = notificationService.getAllUserNotifications(userId);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(notificationDto, result.get(0));
+        }
     }
 
-    @Test
-    void getAllUserNotifications_shouldReturnEmptyList() {
-        // given
-        Long userId = 1L;
+    @Nested
+    class DeleteUserNotificationsTests {
+        @Test
+        void deleteUserNotifications_ShouldDeleteNotifications() {
+            Long userId = 1L;
+            NotificationEntity notificationEntity = new NotificationEntity();
+            notificationEntity.setId(1L);
 
-        // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.empty());
-        var result = sut.getAllUserNotifications(userId);
+            when(repository.findAllByUserId(userId)).thenReturn(Optional.of(List.of(notificationEntity)));
 
-        // then
-        assertNotNull(result);
-        assertEquals(0, result.size());
+            notificationService.deleteUserNotifications(userId);
+
+            verify(repository, times(1)).deleteAllById(List.of(1L));
+        }
     }
 
-    @Test
-    void getAllUserNotifications_shouldReturnNotificationList() {
-        // given
-        Long userId = 1L;
-        List<NotificationEntity> notificationEntities = List.of(
-                NotificationEntity.builder().id(1L).userId(1L).message("Test Message 1").build(),
-                NotificationEntity.builder().id(2L).userId(1L).message("Test Message 2").build()
-        );
+    @Nested
+    class SetNotificationReadTests {
+        @Test
+        void setNotificationRead_ShouldSetNotificationAsRead() {
+            Long notificationId = 1L;
+            NotificationEntity notificationEntity = new NotificationEntity();
+            notificationEntity.setAcknowledged(false);
+            NotificationDto notificationDto = new NotificationDto();
 
-        // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.of(notificationEntities));
-        var result = sut.getAllUserNotifications(userId);
+            when(repository.findById(notificationId)).thenReturn(Optional.of(notificationEntity));
+            when(repository.save(any(NotificationEntity.class))).thenReturn(notificationEntity);
+            when(mapper.toDto(notificationEntity)).thenReturn(notificationDto);
 
-        // then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(NotificationDto.class, result.get(0).getClass());
+            NotificationDto result = notificationService.setNotificationRead(notificationId);
+
+            assertNotNull(result);
+            assertTrue(notificationEntity.getAcknowledged());
+            verify(repository, times(1)).save(notificationEntity);
+        }
+
+        @Test
+        void setNotificationRead_ShouldThrowExceptionIfNotFound() {
+            Long notificationId = 1L;
+
+            when(repository.findById(notificationId)).thenReturn(Optional.empty());
+
+            assertThrows(IllegalStateException.class, () -> notificationService.setNotificationRead(notificationId));
+        }
+    }
+
+    @Nested
+    class MaybeCreateNotificationTests {
+        @Test
+        void maybeCreateNotification_ShouldCreateNotification() {
+            Long userId = 1L;
+            Long sensorId = 1L;
+            Instant eventTimestamp = Instant.now();
+            int maxNotificationInterval = 30;
+            MeasurementViolationEntity violationEntity = new MeasurementViolationEntity();
+            violationEntity.setSensorId(sensorId);
+            violationEntity.setUserId(userId);
+            violationEntity.setMeasurementEntityId(1L);
+
+            SensorEntity sensorEntity = new SensorEntity();
+            MeasurementViolationEvent event = new MeasurementViolationEvent(List.of(violationEntity), eventTimestamp);
+
+            when(applicationProperties.getMaxNotificationIntervalMinutes()).thenReturn(maxNotificationInterval);
+            when(sensorService.getSensorEntityById(sensorId)).thenReturn(sensorEntity);
+            when(repository.findByUserIdAndMeasurementEntity_SensorEntity_IdAndCreatedAfter(eq(userId), eq(sensorId), any(Instant.class)))
+                    .thenReturn(Optional.empty());
+
+            notificationService.maybeCreateNotification(event);
+
+            ArgumentCaptor<NotificationEntity> notificationCaptor = ArgumentCaptor.forClass(NotificationEntity.class);
+            verify(repository, times(1)).save(notificationCaptor.capture());
+
+            NotificationEntity savedNotification = notificationCaptor.getValue();
+            assertEquals(userId, savedNotification.getUserId());
+            assertFalse(savedNotification.getAcknowledged());
+            assertEquals(violationEntity.getMeasurementEntityId(), savedNotification.getMeasurementEntityId());
+        }
+
+        @Test
+        void maybeCreateNotification_ShouldNotCreateNotificationIfRecentExists() {
+            Long userId = 1L;
+            Long sensorId = 1L;
+            Instant eventTimestamp = Instant.now();
+            int maxNotificationInterval = 30;
+            MeasurementViolationEntity violationEntity = new MeasurementViolationEntity();
+            violationEntity.setSensorId(sensorId);
+            violationEntity.setUserId(userId);
+            violationEntity.setMeasurementEntityId(1L);
+
+            SensorEntity sensorEntity = new SensorEntity();
+            MeasurementViolationEvent event = new MeasurementViolationEvent(List.of(violationEntity), eventTimestamp);
+
+            NotificationEntity existingNotification = new NotificationEntity();
+
+            when(applicationProperties.getMaxNotificationIntervalMinutes()).thenReturn(maxNotificationInterval);
+            when(sensorService.getSensorEntityById(sensorId)).thenReturn(sensorEntity);
+            when(repository.findByUserIdAndMeasurementEntity_SensorEntity_IdAndCreatedAfter(eq(userId), eq(sensorId), any(Instant.class)))
+                    .thenReturn(Optional.of(existingNotification));
+
+            notificationService.maybeCreateNotification(event);
+
+            verify(repository, never()).save(any(NotificationEntity.class));
+        }
     }
 }
