@@ -20,25 +20,9 @@ public class SensorController {
 
     private final MeasurementService measurementService;
 
-    private final SensorService sensorService;
-
-    public SensorController(RegistrationService registrationService, MeasurementService measurementService,
-                            SensorService sensorService) {
+    public SensorController(RegistrationService registrationService, MeasurementService measurementService) {
         this.registrationService = registrationService;
         this.measurementService = measurementService;
-        this.sensorService = sensorService;
-    }
-
-    @GetMapping(value = "/settings/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SensorDto> getSensorSettings(@PathVariable Long id) {
-        var sensorDto = this.sensorService.getSensorDtoById(id);
-        return new ResponseEntity<>(sensorDto, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/settings", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SensorDto> saveSensorSettings(@RequestBody SensorDto sensorDto) {
-        var updatedDto = this.sensorService.saveSensorSettings(sensorDto);
-        return new ResponseEntity<>(updatedDto, HttpStatus.OK);
     }
 
     @PostMapping(value = "/register/confirm", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)

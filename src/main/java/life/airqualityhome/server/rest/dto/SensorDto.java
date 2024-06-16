@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,4 +25,6 @@ public class SensorDto {
     private boolean alarmActive;
     private double warningThreshold;
     private double linearCorrectionValue;
+    private Instant updated;
+    private Instant created;
 }
