@@ -9,7 +9,7 @@ services:
       - MARIADB_PASSWORD=${mariaDB_user_password}
       - MARIADB_ROOT_PASSWORD=${flyway_user_password}
       - MARIADB_USER=${mariaDB_user}
-      - MARIADB_URL=jdbc:mariadb://mariadb:3306/airqualityhome
+      - MARIADB_URL=jdbc:mariadb://172.21.0.1:3306/airqualityhome
       - SPRING_PROFILES_ACTIVE=prod
       - MARIADB_USER_PASSWORD=${mariaDB_user_password}
       - TOKEN_EXPIRE_MILLIS=300000
@@ -19,7 +19,7 @@ services:
       - FLYWAY_USER=admin
       - FLYWAY_USER_PASSWORD=${flyway_user_password}
     ports:
-      - "8080:8080"
+      - "8085:8080"
     networks:
       - local
 
