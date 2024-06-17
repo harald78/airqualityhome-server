@@ -217,7 +217,7 @@ class MeasurementServiceImplTest {
         List<SensorEntity> sensorEntities = this.getSensorEntitiesForTest();
         Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
         SensorRawDataDto rawDataDto = SensorRawDataDto.builder()
-                                                      .type(SensorTypeEntity.Type.GAS)
+                                                      .type(SensorTypeEntity.Type.VOC)
                                                       .unit(MeasurementEntity.Unit.PPM)
                                                       .value(3000.0).build();
 
@@ -225,7 +225,7 @@ class MeasurementServiceImplTest {
         var result = assertThrows(IllegalStateException.class, () -> sut.getMeasurementEntity(rawDataDto, sensorEntities, timestamp, "F0F0F0"));
 
         assertNotNull(result);
-        assertEquals("Sensor type GAS not found for base F0F0F0", result.getMessage());
+        assertEquals("Sensor type VOC not found for base F0F0F0", result.getMessage());
     }
 
     @Test

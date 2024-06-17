@@ -3,8 +3,6 @@ package life.airqualityhome.server.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
-
 @Entity
 @Builder
 @Getter
@@ -21,7 +19,7 @@ public class SensorTypeEntity extends BaseEntity {
     private String name;
 
     public enum Type {
-        TEMPERATURE, HUMIDITY, PRESSURE, GAS, PARTICLE, LIGHT;
+        TEMPERATURE, HUMIDITY, PRESSURE, VOC, H2, LPG, CO, ALCOHOL, PROPANE, PARTICLE, LIGHT;
     }
 
     @Enumerated(EnumType.STRING)

@@ -75,7 +75,7 @@ class RegistrationServiceTest {
                                         .build(),
                                 SensorTypeEntity.builder()
                                         .id(1L)
-                                        .type(SensorTypeEntity.Type.GAS)
+                                        .type(SensorTypeEntity.Type.VOC)
                                         .maxValue(100.0)
                                         .minValue(100000.0)
                                         .name("MQ-2")
@@ -115,7 +115,7 @@ class RegistrationServiceTest {
                                 .build(),
                         SensorTypeEntity.builder()
                                 .id(1L)
-                                .type(SensorTypeEntity.Type.GAS)
+                                .type(SensorTypeEntity.Type.VOC)
                                 .maxValue(100.0)
                                 .minValue(100000.0)
                                 .name("MQ-2")
@@ -171,7 +171,7 @@ class RegistrationServiceTest {
                                 .build(),
                         SensorTypeEntity.builder()
                                 .id(1L)
-                                .type(SensorTypeEntity.Type.GAS)
+                                .type(SensorTypeEntity.Type.VOC)
                                 .maxValue(100.0)
                                 .minValue(100000.0)
                                 .name("MQ-2")
@@ -237,7 +237,7 @@ class RegistrationServiceTest {
                                 .build(),
                         SensorTypeEntity.builder()
                                 .id(1L)
-                                .type(SensorTypeEntity.Type.GAS)
+                                .type(SensorTypeEntity.Type.VOC)
                                 .maxValue(100.0)
                                 .minValue(100000.0)
                                 .name("MQ-2")
@@ -367,7 +367,7 @@ class RegistrationServiceTest {
                                         .build(),
                                 SensorTypeEntity.builder()
                                         .id(1L)
-                                        .type(SensorTypeEntity.Type.GAS)
+                                        .type(SensorTypeEntity.Type.VOC)
                                         .maxValue(100.0)
                                         .minValue(100000.0)
                                         .name("MQ-2")
@@ -440,7 +440,7 @@ class RegistrationServiceTest {
                                         .build(),
                                 SensorTypeEntity.builder()
                                         .id(1L)
-                                        .type(SensorTypeEntity.Type.GAS)
+                                        .type(SensorTypeEntity.Type.VOC)
                                         .maxValue(100.0)
                                         .minValue(100000.0)
                                         .name("MQ-2")
