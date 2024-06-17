@@ -95,7 +95,12 @@ public class NotificationService {
             case TEMPERATURE -> type + " temperature " + alarmValue + " °C violated by " + formattedDiff + " °C";
             case HUMIDITY -> type + " humidity " + alarmValue + " % violated by " + formattedDiff + " %";
             case PRESSURE -> type + " pressure " + alarmValue + " hPa violated by " + formattedDiff + " hPa";
-            case GAS -> type + " gas " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case VOC -> type + " voc " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case H2 -> type +  " h2 " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case LPG -> type + " lpg " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case CO -> type + " co " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case ALCOHOL -> type + " alcohol " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case PROPANE -> type + " propane " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case PARTICLE -> type + " particle " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case LIGHT -> type + " light " + alarmValue + " lx violated by " + formattedDiff + " lx";
         };

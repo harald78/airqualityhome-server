@@ -11,6 +11,8 @@ services:
     hostname: mariadb
     networks:
       - local
+    volumes:
+      - /var/lib/mariadb:/var/lib/mysql  # Mount the MariaDB data directory
 
 networks:
   local:

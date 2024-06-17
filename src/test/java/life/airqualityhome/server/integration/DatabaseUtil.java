@@ -152,7 +152,7 @@ public class DatabaseUtil {
                                                 .build();
         final var sensorType2 = SensorTypeEntity.builder()
                                                 .id(2L)
-                                                .type(SensorTypeEntity.Type.GAS)
+                                                .type(SensorTypeEntity.Type.VOC)
                                                 .maxValue(100.0)
                                                 .minValue(100000.0)
                                                 .name("MQ-2")
