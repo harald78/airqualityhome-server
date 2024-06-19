@@ -66,8 +66,8 @@ public class SensorControllerIT {
                 + "},"
                 + "{"
                 + "\"value\":2000.0,"
-                + "\"unit\":\"PPM\","
-                + "\"type\":\"GAS\""
+                + "\"unit\":\"PPB\","
+                + "\"type\":\"VOC\""
                 + "}"
                 + "]"
                 + "}";
