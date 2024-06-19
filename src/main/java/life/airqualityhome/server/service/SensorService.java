@@ -43,6 +43,11 @@ public class SensorService {
         return sensorRepository.findByUuid(uuid).orElse(new ArrayList<>());
     }
 
+    public List<SensorEntity> getSensorEntitiesByUuid(UUID uuid) {
+        var sensorList = sensorRepository.findByUuid(uuid);
+        return sensorList.orElse(new ArrayList<>());
+    }
+
     public List<SensorDto> getAllSensorsByUUID(String sensorId) {
         var sensorList = this.getAllSensorEntitiesByUUID(sensorId);
         return sensorList.stream().map(sensorMapper::toDto).toList();

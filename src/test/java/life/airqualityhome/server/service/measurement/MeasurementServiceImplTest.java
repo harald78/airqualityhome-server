@@ -218,7 +218,7 @@ class MeasurementServiceImplTest {
         Instant timestamp = LocalDateTime.of(2024, 6, 3, 22, 50, 0).toInstant(ZoneOffset.UTC);
         SensorRawDataDto rawDataDto = SensorRawDataDto.builder()
                                                       .type(SensorTypeEntity.Type.VOC)
-                                                      .unit(MeasurementEntity.Unit.PPM)
+                                                      .unit(MeasurementEntity.Unit.PPB)
                                                       .value(3000.0).build();
 
         // when
