@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/app/settings")
 public class SettingsController {
@@ -18,8 +20,8 @@ public class SettingsController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SensorDto> getSensorSettings(@PathVariable Long id) {
-        var sensorDto = this.sensorService.getSensorDtoById(id);
+    public ResponseEntity<List<SensorDto>> getSensorSettings(@PathVariable Long id) {
+        var sensorDto = this.sensorService.getSensorsForUser(id);
         return new ResponseEntity<>(sensorDto, HttpStatus.OK);
     }
 
@@ -31,6 +33,11 @@ public class SettingsController {
 
     @ExceptionHandler
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

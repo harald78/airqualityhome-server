@@ -37,6 +37,11 @@ public class NotificationsController {
     }
 
     @ExceptionHandler
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<String> noContentFoundException(NoContentFoundException ex) { return new ResponseEntity<>(ex.getMessage(), HttpStatus.NO_CONTENT); }
 
     @ExceptionHandler
