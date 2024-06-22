@@ -34,10 +34,6 @@ public class SensorService {
         return sensorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Sensor not found"));
     }
 
-    public SensorDto getSensorDtoById(Long id) {
-        return this.sensorMapper.toDto(this.getSensorEntityById(id));
-    }
-
     public List<SensorEntity> getAllSensorEntitiesByUUID(String sensorId) {
         UUID uuid = UUID.nameUUIDFromBytes(sensorId.getBytes());
         return sensorRepository.findByUuid(uuid).orElse(new ArrayList<>());
@@ -63,20 +59,17 @@ public class SensorService {
            .stream().map(sensorMapper::toDto).toList();
     }
 
-    public List<SensorEntity> getSensorsByBaseIdAndUserId(Long baseId, Long userId) {
-        return this.sensorRepository.findByUserEntityIdAndSensorBaseSensorType_SensorBaseEntityId(userId, baseId);
-    }
-
     public SensorDto saveSensorSettings(SensorDto sensorDto) {
         var currentEntity = this.getSensorEntityById(sensorDto.getId());
 
         // Maybe change location for all sensors related to a given base
         if (!currentEntity.getLocation().equals(sensorDto.getLocation())) {
-            var otherEntities = this.sensorRepository.findByUserEntityIdAndSensorBaseSensorType_SensorBaseEntityId(sensorDto.getUserId(), sensorDto.getSensorBaseSensorTypeId());
-            otherEntities.forEach(e -> {
+            UUID sensorUuid = UUID.fromString(sensorDto.getUuid());
+            var otherEntities = this.sensorRepository.findByUuid(sensorUuid);
+            otherEntities.ifPresent(entities -> entities.forEach(e -> {
                 e.setLocation(sensorDto.getLocation());
                 this.sensorRepository.save(e);
-            });
+            }));
         }
 
         currentEntity.setLocation(sensorDto.getLocation());

@@ -102,4 +102,9 @@ public class UserController {
     public ResponseEntity<String> handleException(ExpiredJwtException e){
         return ResponseEntity.status(401).build();
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
