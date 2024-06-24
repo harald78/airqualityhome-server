@@ -199,7 +199,7 @@ public class MeasurementServiceImpl implements MeasurementService {
 
         sensorEntities.forEach(s -> {
             List<MeasurementEntity> measurementEntities = measurementRepository.findBySensorIdAndTimestampIsBetweenOrderByCreatedAsc(s.getId(), from, to);
-            var groupedData = this.getChartDataPoints(measurementEntities);
+            var groupedData = this.getChartDataPoints(measurementEntities, sensorEntity);
             var chartDataDto = this.getChartDataList(groupedData, s);
             chartDataDto.forEach(c -> historyMeasurementDto.getData().add(c));
 
@@ -225,7 +225,7 @@ public class MeasurementServiceImpl implements MeasurementService {
         List<MeasurementEntity> measurements = measurementRepository.findBySensorIdAndTimestampIsBetweenOrderByCreatedAsc(sensorId, from, to);
         SensorEntity sensor = this.sensorService.getSensorEntityById(sensorId);
 
-        Map<String, List<HistoryMeasurementDto.ChartDataPoint>> groupedData = this.getChartDataPoints(measurements);
+        Map<String, List<HistoryMeasurementDto.ChartDataPoint>> groupedData = this.getChartDataPoints(measurements, sensor);
         List<HistoryMeasurementDto.ChartDataDto> chartDataDto = this.getChartDataList(groupedData, sensor);
         return new HistoryMeasurementDto(sensor.getSensorBaseSensorType().getSensorBaseEntityId(),
                 sensor.getSensorBaseSensorType().getSensorBase().getName(), sensor.getLocation(), chartDataDto);
@@ -237,7 +237,7 @@ public class MeasurementServiceImpl implements MeasurementService {
      * @param measurementEntities - List of MeasurementEntity
      * @return Map of <String, List<HistoryMeasurementDto.ChartDataPoint>>
      */
-    protected Map<String, List<HistoryMeasurementDto.ChartDataPoint>> getChartDataPoints(final List<MeasurementEntity> measurementEntities) {
+    protected Map<String, List<HistoryMeasurementDto.ChartDataPoint>> getChartDataPoints(final List<MeasurementEntity> measurementEntities, final SensorEntity sensor) {
         if (measurementEntities.isEmpty()) {
             return new HashMap<>();
         }
@@ -254,7 +254,7 @@ public class MeasurementServiceImpl implements MeasurementService {
                 return false; }).collect(Collectors.groupingBy(
                                m -> m.getUnit().name(),
                                Collectors.mapping(
-                                   m -> new HistoryMeasurementDto.ChartDataPoint(m.getSensorValue(), m.getTimestamp().atOffset(ZoneOffset.UTC).toLocalDateTime()),
+                                   m -> new HistoryMeasurementDto.ChartDataPoint(m.getSensorValue() + sensor.getLinearCorrectionValue(), m.getTimestamp().atOffset(ZoneOffset.UTC).toLocalDateTime()),
                                    Collectors.toList()
                                )));
     }
