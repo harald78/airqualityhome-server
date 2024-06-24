@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NotificationCRUDRepository extends CrudRepository<NotificationEntity, Long>{
-    Optional<List<NotificationEntity>> findAllByUserId(Long userId);
+    Optional<List<NotificationEntity>> findAllByUserIdOrderByCreatedDesc(Long userId);
     Optional<NotificationEntity> findByUserIdAndMeasurementEntity_SensorEntity_IdAndCreatedAfter(Long userId, Long sensorId, Instant timestamp);
 }

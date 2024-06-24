@@ -2,6 +2,7 @@ package life.airqualityhome.server.rest.controller;
 
 import life.airqualityhome.server.rest.exceptions.NoContentFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import life.airqualityhome.server.service.notifications.NotificationService;
@@ -18,19 +19,19 @@ public class NotificationsController {
         this.service = service;
     }
 
-    @PostMapping("/read/{id}")
+    @PostMapping(value = "/read/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDto> readNotification(@PathVariable Long id) {
         var notificationDto = this.service.setNotificationRead(id);
         return new ResponseEntity<>(notificationDto, HttpStatus.OK);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping(value ="/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<NotificationDto>> getUserNotifications(@PathVariable Long id) {
         List<NotificationDto> notifications = service.getAllUserNotifications(id);
         return new ResponseEntity<>(notifications, HttpStatus.OK);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping(value = "/user/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> deleteUserNotifications(@PathVariable Long id) {
         this.service.deleteUserNotifications(id);
         return new ResponseEntity<>("", HttpStatus.OK);

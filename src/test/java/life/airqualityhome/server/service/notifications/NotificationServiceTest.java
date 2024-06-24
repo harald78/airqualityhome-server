@@ -50,7 +50,7 @@ public class NotificationServiceTest {
         Long userId = 1L;
 
         // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.empty());
+        when(notificationCRUDRepository.findAllByUserIdOrderByCreatedDesc(anyLong())).thenReturn(Optional.empty());
         var result = sut.getAllUserNotifications(userId);
 
         // then
@@ -68,7 +68,7 @@ public class NotificationServiceTest {
         );
 
         // when
-        when(notificationCRUDRepository.findAllByUserId(anyLong())).thenReturn(Optional.of(notificationEntities));
+        when(notificationCRUDRepository.findAllByUserIdOrderByCreatedDesc(anyLong())).thenReturn(Optional.of(notificationEntities));
         var result = sut.getAllUserNotifications(userId);
 
         // then

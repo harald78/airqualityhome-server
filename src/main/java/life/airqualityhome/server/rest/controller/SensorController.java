@@ -31,7 +31,7 @@ public class SensorController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/measurements")
+    @PostMapping(value = "/measurements", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> addMeasurement(@RequestBody BaseRawDataDto rawDataDto) {
         var result = this.measurementService.addMeasurements(rawDataDto);
         if (result) {
