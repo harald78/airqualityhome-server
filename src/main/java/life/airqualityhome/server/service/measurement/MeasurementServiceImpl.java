@@ -52,6 +52,11 @@ public class MeasurementServiceImpl implements MeasurementService {
 
     }
 
+    /**
+     *  Get latest measurements by userId.
+     * @param userId String
+     * @return List of LatestMeasurementDto
+     */
     @Override
     public List<LatestMeasurementDto> getUserMeasurements(String userId) {
         try {
@@ -73,7 +78,7 @@ public class MeasurementServiceImpl implements MeasurementService {
                     dto.setAlarmMin(sensor.getAlarmMin());
                     dto.setTimestamp(sensorMeasurement.getTimestamp());
                     dto.setUnit(sensorMeasurement.getUnit().name());
-                    dto.setValue(sensorMeasurement.getSensorValue());
+                    dto.setValue(sensorMeasurement.getSensorValue() + sensor.getLinearCorrectionValue());
                     dto.setAlarmActive(sensor.isAlarmActive());
                     dto.setWarningThreshold(sensor.getWarningThreshold());
                     dto.setLinearCorrectionValue(sensor.getLinearCorrectionValue());
@@ -87,6 +92,12 @@ public class MeasurementServiceImpl implements MeasurementService {
         }
     }
 
+    /**
+     * Add new sensor measurements
+     *
+     * @param baseRawDataDto BaseRawDataDto
+     * @return boolean - True if amount of saved measurements is equal to amount of saved sensors.
+     */
     @Override
     public boolean addMeasurements(final BaseRawDataDto baseRawDataDto) {
         List<SensorEntity> sensorEntities = this.sensorService.getAllSensorEntitiesByUUID(baseRawDataDto.getId());
@@ -114,6 +125,13 @@ public class MeasurementServiceImpl implements MeasurementService {
             sensorEntities.size());
     }
 
+    /**
+     * Check if an alarm notification for a measurement is necessary and create MeasurementViolationEntities
+     *
+     * @param measurementEntities - List fo MeasurementEntity
+     * @param sensorEntities - List of SensorEntity
+     * @return List of MeasurementViolationEntity
+     */
     public List<MeasurementViolationEntity> checkMeasurementsForSensorAlarmNotifications(final List<MeasurementEntity> measurementEntities, final List<SensorEntity> sensorEntities) {
         return sensorEntities.stream().filter(SensorEntity::isAlarmActive)
             .flatMap(s -> measurementEntities.stream().filter(me -> me.getSensorId() == s.getId())
@@ -121,6 +139,9 @@ public class MeasurementServiceImpl implements MeasurementService {
                 .map(me -> this.getMeasurementViolation(me, s))).toList();
     }
 
+    /**
+     * BiPredicate to check if min or max value is under- or over-exceeded.
+     */
     BiPredicate<MeasurementEntity, SensorEntity> measurementViolation = (measurementEntity, sensor) ->
         this.getCorrectedMeasurementValue(measurementEntity.getSensorValue(), sensor.getLinearCorrectionValue()) > sensor.getAlarmMax() ||
             this.getCorrectedMeasurementValue(measurementEntity.getSensorValue(), sensor.getLinearCorrectionValue()) < sensor.getAlarmMin();
@@ -129,6 +150,13 @@ public class MeasurementServiceImpl implements MeasurementService {
         return measuredValue + linearCorrectionValue;
     }
 
+    /**
+     * Create a MeasurementViolationEntity
+     *
+     * @param measurementEntity - MeasurementEntity
+     * @param sensor - SensorEntity
+     * @return MeasurementViolationEntity
+     */
     protected MeasurementViolationEntity getMeasurementViolation(MeasurementEntity measurementEntity, SensorEntity sensor) {
         MeasurementViolationEntity.Type type = MeasurementViolationEntity.Type.MIN;
         var alarmValue = sensor.getAlarmMin();
@@ -150,6 +178,15 @@ public class MeasurementServiceImpl implements MeasurementService {
             .build();
     }
 
+    /**
+     * Get measurements for all sensors belonging to the same sensor base. Returns a HistoryMeasurementDto data
+     * structure for displaying the graph.
+     *
+     * @param sensorId - Long - The sensorId
+     * @param from - Instant timestamp from
+     * @param to - Instant timestamp to
+     * @return HistoryMeasurementDto
+     */
     @Override
     public HistoryMeasurementDto getBaseMeasurements(final Long sensorId, final Instant from, final Instant to) {
         SensorEntity sensorEntity = this.sensorService.getSensorEntityById(sensorId);
@@ -176,6 +213,13 @@ public class MeasurementServiceImpl implements MeasurementService {
         return historyMeasurementDto;
     }
 
+    /**
+     * Get all sensor measurements and return HistoryMeasurementDto as data structure to display graph.
+     * @param sensorId - Long - The id of the sensor
+     * @param from - Instant timestamp from
+     * @param to - Instant timestamp to
+     * @return MeasurementHistoryDto
+     */
     @Override
     public HistoryMeasurementDto getSensorMeasurements(final Long sensorId, final Instant from, final Instant to) {
         List<MeasurementEntity> measurements = measurementRepository.findBySensorIdAndTimestampIsBetweenOrderByCreatedAsc(sensorId, from, to);
@@ -187,6 +231,12 @@ public class MeasurementServiceImpl implements MeasurementService {
                 sensor.getSensorBaseSensorType().getSensorBase().getName(), sensor.getLocation(), chartDataDto);
     }
 
+    /**
+     * Helper Method creating the chartDataPoints from measurementEntities.
+     *
+     * @param measurementEntities - List of MeasurementEntity
+     * @return Map of <String, List<HistoryMeasurementDto.ChartDataPoint>>
+     */
     protected Map<String, List<HistoryMeasurementDto.ChartDataPoint>> getChartDataPoints(final List<MeasurementEntity> measurementEntities) {
         if (measurementEntities.isEmpty()) {
             return new HashMap<>();
@@ -209,6 +259,13 @@ public class MeasurementServiceImpl implements MeasurementService {
                                )));
     }
 
+    /**
+     * Helper method to create the ChartDataList from grouped ChartDataPoints.
+     *
+     * @param groupedData - Map of <String, List<HistoryMeasurementDto.ChartDataPoint>>
+     * @param sensor - SensorEntity
+     * @return List of HistoryMeasurementDto.ChartDataDto
+     */
     protected List<HistoryMeasurementDto.ChartDataDto> getChartDataList(final Map<String, List<HistoryMeasurementDto.ChartDataPoint>> groupedData, SensorEntity sensor) {
         return groupedData.entrySet().stream()
                    .map(entry -> new HistoryMeasurementDto.ChartDataDto(sensor.getSensorBaseSensorType().getSensorType().getType().name(),
@@ -220,6 +277,16 @@ public class MeasurementServiceImpl implements MeasurementService {
                                                                         entry.getValue())).toList();
     }
 
+    /**
+     * Method to create MeasurementEntity
+     *
+     * @param rawDataDto - SensorRawDataDto from sensor
+     * @param sensorEntities - List of SensorEntities
+     * @param timestamp - Instant timestamp (created date)
+     * @param id - String id - The id of the sensorBase
+     * @return MeasurementEntity
+     * @throws IllegalStateException
+     */
     MeasurementEntity getMeasurementEntity(SensorRawDataDto rawDataDto, List<SensorEntity> sensorEntities, Instant timestamp, String id) throws IllegalStateException {
         Optional<SensorEntity> sensor = this.filterBySensorType(sensorEntities, rawDataDto.getType());
         if (sensor.isEmpty()) {
@@ -233,6 +300,13 @@ public class MeasurementServiceImpl implements MeasurementService {
                 .timestamp(timestamp).build();
     }
 
+    /**
+     * Method to filter SensorEntity by sensorType.
+     *
+     * @param sensorEntities - List of Sensor Entities
+     * @param sensorType - SensorTypeEntity.Type
+     * @return Optional of SensorEntity
+     */
     Optional<SensorEntity> filterBySensorType(List<SensorEntity> sensorEntities, SensorTypeEntity.Type sensorType) {
         if (sensorEntities == null || sensorEntities.isEmpty()) {
             return Optional.empty();

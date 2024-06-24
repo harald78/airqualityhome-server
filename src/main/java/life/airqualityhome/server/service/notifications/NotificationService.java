@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -40,13 +39,13 @@ public class NotificationService {
     }
 
     public List<NotificationDto> getAllUserNotifications(Long userId) {
-        return repository.findAllByUserId(userId)
+        return repository.findAllByUserIdOrderByCreatedDesc(userId)
             .map(l -> l.stream().map(mapper::toDto).toList())
             .orElse(List.of());
     }
 
     public void deleteUserNotifications(Long userId) {
-        var userNotifications = repository.findAllByUserId(userId)
+        var userNotifications = repository.findAllByUserIdOrderByCreatedDesc(userId)
                                           .map(l -> l.stream().map(NotificationEntity::getId).toList());
         userNotifications.ifPresent(repository::deleteAllById);
     }
