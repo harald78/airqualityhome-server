@@ -88,23 +88,32 @@ public class PushNotificationService {
         if (pushSubscriptionEntity.isPresent()) {
             var sub = pushSubscriptionEntity.get();
             var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
-            var payload = PushNotificationPayload.builder()
-                    .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
-                    .body(notificationEntity.getMessage())
-                    .icon("assets/icons/icon-192x192.png")
-                    .vibrate(List.of(100, 50, 100))
-                    .data(Map.of("url", "https://app.airqualityhome.life"))
-                    .actions(List.of(
-                            PushNotificationAction.builder()
-                                    .action("open_url")
-                                    .title("To App")
-                                    .build())).build();
+            String payload = "{"
+                    + "\"title\": \"New Notification\","
+                    + "\"body\": \"Test!\","
+                    + "\"icon\": \"assets/icons/icon-192x192.png\","
+                    + "\"vibrate\": [100, 50, 100],"
+                    + "\"data\": {\"url\": \"https://app.airqualityhome.life\"},"
+                    + "\"actions\": [{\"action\": \"open_url\", \"title\": \"Zur App\"}]"
+                    + "}";
+
+//            var payload = PushNotificationPayload.builder()
+//                    .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
+//                    .body(notificationEntity.getMessage())
+//                    .icon("assets/icons/icon-192x192.png")
+//                    .vibrate(List.of(100, 50, 100))
+//                    .data(Map.of("url", "https://app.airqualityhome.life"))
+//                    .actions(List.of(
+//                            PushNotificationAction.builder()
+//                                    .action("open_url")
+//                                    .title("To App")
+//                                    .build())).build();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
-                String payloadString = objectMapper.writeValueAsString(payload);
-                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString.getBytes());
+//                String payloadString = objectMapper.writeValueAsString(payload);
+                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payload);
                 this.pushService.send(notification);
                 log.info("Send push notification to user {}", notificationEntity.getUserId());
 
