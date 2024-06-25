@@ -30,12 +30,16 @@ public class NotificationService {
 
     private final ApplicationProperties applicationProperties;
 
+    private final PushNotificationService pushNotificationService;
+
     public NotificationService(NotificationCRUDRepository repository, NotificationMapper mapper,
-                               ApplicationProperties applicationProperties, SensorService sensorService) {
+                               ApplicationProperties applicationProperties, SensorService sensorService,
+                               PushNotificationService pushNotificationService) {
         this.repository = repository;
         this.mapper = mapper;
         this.applicationProperties = applicationProperties;
         this.sensorService = sensorService;
+        this.pushNotificationService = pushNotificationService;
     }
 
     public List<NotificationDto> getAllUserNotifications(Long userId) {
@@ -80,9 +84,14 @@ public class NotificationService {
                                             .message(this.getViolationMessage(mv, sensorEntity))
                                             .measurementEntityId(mv.getMeasurementEntityId())
                                             .build();
-                    this.repository.save(userNotification);
+                    var savedNotification = this.repository.save(userNotification);
+                    this.maybeSendPushNotification(savedNotification, mv);
                 });
         });
+    }
+
+    public void maybeSendPushNotification(NotificationEntity notificationEntity, MeasurementViolationEntity measurementViolationEntity) {
+        this.pushNotificationService.maybeSendPushNotification(notificationEntity, measurementViolationEntity);
     }
 
     private String getViolationMessage(MeasurementViolationEntity mve, SensorEntity sensorEntity) {
@@ -104,4 +113,9 @@ public class NotificationService {
             case LIGHT -> type + " light " + alarmValue + " lx violated by " + formattedDiff + " lx";
         };
     }
+
+
+
+
+
 }
