@@ -24,4 +24,8 @@ public class ApplicationProperties {
     private Integer maxNotificationIntervalMinutes;
 
     private Integer maxSensorMeasurementIntervalMinutes;
+
+    private String vapidPublicKey;
+
+    private String vapidPrivateKey;
 }

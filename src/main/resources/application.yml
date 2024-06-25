@@ -18,8 +18,10 @@ airqualityhome:
   sensor-api-token-header-name: ${sensor_api_token_header_name}
   sensor-api-auth-token: ${sensor_api_auth_token}
   token-expire-millis: 300000 # 5 Minutes
-  max-notification-interval-minutes: 20
+  max-notification-interval-minutes: 30
   max-sensor-measurement-interval-minutes: 10
+  vapid-public-key: ${vapid_public_key}
+  vapid-private-key: ${vapid_private_key}
 
 management:
   endpoints:

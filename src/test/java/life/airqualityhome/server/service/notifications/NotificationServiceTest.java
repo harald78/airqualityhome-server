@@ -30,6 +30,9 @@ public class NotificationServiceTest {
     @Mock
     SensorService sensorService;
 
+    @Mock
+    PushNotificationService pushNotificationService;
+
     NotificationMapper notificationMapper;
 
     ApplicationProperties applicationProperties;
@@ -41,7 +44,7 @@ public class NotificationServiceTest {
         this.notificationMapper = new NotificationMapperImpl();
         this.applicationProperties = new ApplicationProperties();
         this.applicationProperties.setMaxNotificationIntervalMinutes(10);
-        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties, sensorService);
+        this.sut = new NotificationService(notificationCRUDRepository, notificationMapper, applicationProperties, sensorService, pushNotificationService);
     }
 
     @Test
