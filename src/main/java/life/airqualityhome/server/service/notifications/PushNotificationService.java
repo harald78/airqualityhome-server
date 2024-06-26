@@ -110,9 +110,9 @@ public class PushNotificationService {
 
             try {
                 String payloadString = objectMapper.writeValueAsString(payload);
-                byte[] auth = Base64.encodeBase64(sub.getAuth().getBytes());
-                PublicKey key = Utils.loadPublicKey(Base64.encodeBase64String(sub.getPublicKey().getBytes()));
-                Notification notification = new Notification(sub.getEndpoint(), key, auth, payloadString.getBytes());
+                String auth = Base64.encodeBase64String(sub.getAuth().getBytes());
+                String key = Base64.encodeBase64String(sub.getPublicKey().getBytes());
+                Notification notification = new Notification(sub.getEndpoint(), key, auth, payloadString);
                 HttpResponse response = this.pushService.send(notification);
                 log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
