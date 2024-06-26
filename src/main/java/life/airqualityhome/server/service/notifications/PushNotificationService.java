@@ -1,6 +1,7 @@
 package life.airqualityhome.server.service.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.annotation.PostConstruct;
 import life.airqualityhome.server.config.ApplicationProperties;
 import life.airqualityhome.server.model.MeasurementViolationEntity;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Urgency;
+import nl.martijndwars.webpush.Utils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
@@ -22,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,8 +69,8 @@ public class PushNotificationService {
         String endpoint = (String) subscription.get("endpoint");
         Map<String, String> keys = (Map<String, String>) subscription.get("keys");
         String p256dh = keys.get("p256dh");
-//        String auth = keys.get("auth");
-        String auth = Base64.getEncoder().encodeToString(((String) keys.get("auth")).getBytes());
+        String auth = keys.get("auth");
+//        String auth = Base64.getEncoder().encodeToString(((String) keys.get("auth")).getBytes());
         PushSubscriptionEntity sub = this.pushSubscriptionRepository.findByUserId(id)
                 .orElse(PushSubscriptionEntity.builder()
                         .build());
@@ -108,7 +110,9 @@ public class PushNotificationService {
 
             try {
                 String payloadString = objectMapper.writeValueAsString(payload);
-                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.NORMAL);
+                byte[] auth = Base64.encodeBase64(sub.getAuth().getBytes());
+                PublicKey key = Utils.loadPublicKey(sub.getPublicKey().getBytes());
+                Notification notification = new Notification(sub.getEndpoint(), key, auth, payloadString.getBytes());
                 HttpResponse response = this.pushService.send(notification);
                 log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
