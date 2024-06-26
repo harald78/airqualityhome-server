@@ -18,6 +18,8 @@ services:
       - SENSOR_API_TOKEN_HEADER_NAME=${sensor_api_token_header_name}
       - FLYWAY_USER=admin
       - FLYWAY_USER_PASSWORD=${flyway_user_password}
+      - VAPID_PUBLIC_KEY=${vapid_public_key}
+      - VAPID_PRIVATE_KEY=${vapid_private_key}
     ports:
       - "8085:8080"
     networks:
