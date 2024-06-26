@@ -3,6 +3,7 @@ package life.airqualityhome.server.rest.controller;
 import life.airqualityhome.server.rest.exceptions.NoContentFoundException;
 import life.airqualityhome.server.service.notifications.PushNotificationService;
 import lombok.extern.slf4j.Slf4j;
+import nl.martijndwars.webpush.Subscription;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class NotificationsController {
     }
 
     @PostMapping(value = "/subscribe/{id}")
-    public ResponseEntity<String> subscribe(@PathVariable Long id, @RequestBody Map<String, Object> subscription) {
+    public ResponseEntity<String> subscribe(@PathVariable Long id, @RequestBody Subscription subscription) {
         var status = this.pushNotificationService.subscribe(subscription, id);
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
