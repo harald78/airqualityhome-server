@@ -91,12 +91,12 @@ public class PushNotificationService {
                     .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
                     .body(notificationEntity.getMessage())
                     .icon("assets/icons/icon-192x192.png")
-                    .image("assets/icons/icon-192x192.png")
+                    .image("assets/icons/icon-96x96.png")
                     .silent(false)
                     .vibrate(new int[] {50, 100, 50})
                     .data(Map.of("onActionClick",
-                            Map.of("default", Map.of("operation", "openWindow", "url", "notifications"),
-                                    "open", Map.of("operation", "openWindow", "url", "notifications"))
+                            Map.of("default", Map.of("operation", "openWindow", "url", "/notifications"),
+                                    "open", Map.of("operation", "openWindow", "url", "/notifications"))
                             ))
                     .actions(List.of(
                             PushNotificationAction.builder()
