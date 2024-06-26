@@ -62,13 +62,7 @@ public class PushNotificationService {
         return this.applicationProperties.getVapidPublicKey();
     }
 
-    @SuppressWarnings("unchecked")
     public String subscribe(final Subscription subscription, Long id) {
-//        String endpoint = (String) subscription.get("endpoint");
-//        Map<String, String> keys = (Map<String, String>) subscription.get("keys");
-//        String p256dh = keys.get("p256dh");
-//        String auth = keys.get("auth");
-//        String auth = Base64.getEncoder().encodeToString(((String) keys.get("auth")).getBytes());
         PushSubscriptionEntity sub = this.pushSubscriptionRepository.findByUserId(id)
                 .orElse(PushSubscriptionEntity.builder()
                         .build());
@@ -108,9 +102,7 @@ public class PushNotificationService {
 
             try {
                 Subscription webSub = new Subscription(sub.getEndpoint(), new Subscription.Keys(sub.getPublicKey(), sub.getAuth()));
-                String payloadString = objectMapper.writeValueAsString(payload);
-//                String auth = Base64.encodeBase64String(sub.getAuth().getBytes());
-//                String key = Base64.encodeBase64String(sub.getPublicKey().getBytes());
+                String payloadString = objectMapper.writeValueAsString(Map.of("notification", payload));
                 Notification notification = new Notification(webSub, payloadString);
                 HttpResponse response = this.pushService.send(notification);
                 log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
