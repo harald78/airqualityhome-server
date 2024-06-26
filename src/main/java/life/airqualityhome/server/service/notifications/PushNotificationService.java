@@ -93,10 +93,10 @@ public class PushNotificationService {
                     .icon("assets/icons/icon-192x192.png")
                     .image("assets/icons/icon-192x192.png")
                     .silent(false)
-                    .vibrate(new int[] {100, 50, 100})
+                    .vibrate(new int[] {50, 100, 50})
                     .data(Map.of("onActionClick",
-                            Map.of("default", Map.of("operation", "openWindow",
-                                    "open", Map.of("operation", "openWindow", "url", "/notifications"))
+                            Map.of("default", Map.of("operation", "openWindow", "url", "notifications",
+                                    "open", Map.of("operation", "openWindow", "url", "notifications"))
                             )))
                     .actions(List.of(
                             PushNotificationAction.builder()
