@@ -14,10 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Subscription;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.h2.util.IntArray;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -64,10 +61,7 @@ public class PushNotificationService {
     }
 
     public String subscribe(final Subscription subscription, Long id) {
-        PushSubscriptionEntity sub = this.pushSubscriptionRepository.findByUserId(id)
-                .orElse(PushSubscriptionEntity.builder()
-                        .build());
-
+        PushSubscriptionEntity sub = PushSubscriptionEntity.builder().build();
         sub.setPublicKey(subscription.keys.p256dh);
         sub.setAuth(subscription.keys.auth);
         sub.setEndpoint(subscription.endpoint);
@@ -80,52 +74,59 @@ public class PushNotificationService {
 
     public void maybeSendPushNotification(NotificationEntity notificationEntity, MeasurementViolationEntity mv) {
 
-        Optional<PushSubscriptionEntity> pushSubscriptionEntity = this.pushSubscriptionRepository
+        List<PushSubscriptionEntity> pushSubscriptions = this.pushSubscriptionRepository
                 .findByUserId(notificationEntity.getUserId());
 
-        if (pushSubscriptionEntity.isPresent() && this.applicationProperties.isActivatePushNotifications()) {
-            var sub = pushSubscriptionEntity.get();
-            var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
-
-            var payload = PushNotificationPayload.builder()
-                    .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
-                    .body(notificationEntity.getMessage())
-                    .icon("assets/icons/icon-192x192.png")
-                    .image("assets/icons/icon-96x96.png")
-                    .silent(false)
-                    .vibrate(new int[] {50, 100, 50, 100, 50, 100, 50})
-                    .actions(List.of(
-                            PushNotificationAction.builder()
-                                    .action("open_notification")
-                                    .title("Open App")
-                                    .build(),
-                            PushNotificationAction.builder()
-                                    .action("ignore")
-                                    .title("Ignore")
-                                    .build()
-                    ))
-                    .data(Map.of("onActionClick",
-                            Map.of("default", Map.of("operation", "openWindow", "url", "/notifications"),
-                                    "open_notification", Map.of("operation", "openWindow", "url", "/notifications"))
-                            )).build();
-
-
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            try {
-                Subscription webSub = new Subscription(sub.getEndpoint(), new Subscription.Keys(sub.getPublicKey(), sub.getAuth()));
-                String payloadString = objectMapper.writeValueAsString(Map.of("notification", payload));
-                Notification notification = new Notification(webSub, payloadString);
-                HttpResponse response = this.pushService.send(notification);
-                log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
-
-            } catch (JoseException | ExecutionException | GeneralSecurityException | IOException |
-                     InterruptedException e) {
-                log.info("Error occurred, could not send push notification for notification {} reason {}", notificationEntity.getId(), e.getMessage());
-            }
-
+        if (!pushSubscriptions.isEmpty() && this.applicationProperties.isActivatePushNotifications()) {
+            pushSubscriptions.forEach(sub -> this.sendNotification(sub, notificationEntity, mv));
         } else {
             log.info("No push subscription found for user {}", notificationEntity.getUserId());
+        }
+    }
+
+    public void sendNotification(PushSubscriptionEntity sub, NotificationEntity notificationEntity, MeasurementViolationEntity mv) {
+        var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
+
+        var payload = PushNotificationPayload.builder()
+                .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
+                .body(notificationEntity.getMessage())
+                .icon("assets/icons/icon-192x192.png")
+                .image("assets/icons/icon-96x96.png")
+                .silent(false)
+                .vibrate(new int[] {50, 100, 50, 100, 50, 100, 50})
+                .actions(List.of(
+                        PushNotificationAction.builder()
+                                .action("open_notification")
+                                .title("Open App")
+                                .build(),
+                        PushNotificationAction.builder()
+                                .action("ignore")
+                                .title("Ignore")
+                                .build()
+                ))
+                .data(Map.of("onActionClick",
+                        Map.of("default", Map.of("operation", "openWindow", "url", "/notifications"),
+                                "open_notification", Map.of("operation", "openWindow", "url", "/notifications"))
+                )).build();
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Subscription webSub = new Subscription(sub.getEndpoint(), new Subscription.Keys(sub.getPublicKey(), sub.getAuth()));
+            String payloadString = objectMapper.writeValueAsString(Map.of("notification", payload));
+            Notification notification = new Notification(webSub, payloadString);
+            HttpResponse response = this.pushService.send(notification);
+
+            if (response.getStatusLine().getStatusCode() == 401 || response.getStatusLine().getStatusCode() == 403) {
+                this.pushSubscriptionRepository.delete(sub);
+            }
+
+            log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
+
+        } catch (JoseException | ExecutionException | GeneralSecurityException | IOException |
+                 InterruptedException e) {
+            log.info("Error occurred, could not send push notification for notification {} reason {}", notificationEntity.getId(), e.getMessage());
         }
     }
 
