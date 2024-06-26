@@ -93,21 +93,22 @@ public class PushNotificationService {
                     .icon("assets/icons/icon-192x192.png")
                     .image("assets/icons/icon-96x96.png")
                     .silent(false)
-                    .vibrate(new int[] {50, 100, 50})
-                    .data(Map.of("onActionClick",
-                            Map.of("default", Map.of("operation", "openWindow", "url", "/notifications"),
-                                    "open", Map.of("operation", "openWindow", "url", "/notifications"))
-                            ))
+                    .vibrate(new int[] {50, 100, 50, 100, 50, 100, 50})
                     .actions(List.of(
                             PushNotificationAction.builder()
-                                    .action("open")
+                                    .action("open_notification")
                                     .title("Open App")
                                     .build(),
                             PushNotificationAction.builder()
                                     .action("ignore")
                                     .title("Ignore")
                                     .build()
+                    ))
+                    .data(Map.of("onActionClick",
+                            Map.of("default", Map.of("operation", "openWindow", "url", "/notifications"),
+                                    "open_notification", Map.of("operation", "openWindow", "url", "/notifications"))
                             )).build();
+
 
             ObjectMapper objectMapper = new ObjectMapper();
 
