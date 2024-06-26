@@ -28,4 +28,6 @@ public class ApplicationProperties {
     private String vapidPublicKey;
 
     private String vapidPrivateKey;
+
+    private boolean activatePushNotifications;
 }

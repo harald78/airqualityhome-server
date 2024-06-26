@@ -22,6 +22,7 @@ airqualityhome:
   max-sensor-measurement-interval-minutes: 10
   vapid-public-key: ${vapid_public_key}
   vapid-private-key: ${vapid_private_key}
+  activate-push-notifications: true
 
 management:
   endpoints:

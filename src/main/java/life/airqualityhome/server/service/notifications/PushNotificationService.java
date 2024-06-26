@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Urgency;
+import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,7 @@ public class PushNotificationService {
         Optional<PushSubscriptionEntity> pushSubscriptionEntity = this.pushSubscriptionRepository
                 .findByUserId(notificationEntity.getUserId());
 
-        if (pushSubscriptionEntity.isPresent()) {
+        if (pushSubscriptionEntity.isPresent() && this.applicationProperties.isActivatePushNotifications()) {
             var sub = pushSubscriptionEntity.get();
             var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
 
@@ -107,8 +108,8 @@ public class PushNotificationService {
             try {
                 String payloadString = objectMapper.writeValueAsString(payload);
                 Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.HIGH);
-                this.pushService.send(notification);
-                log.info("Send push notification to user {}", notificationEntity.getUserId());
+                HttpResponse response = this.pushService.send(notification);
+                log.info("Send push notification to user {} with status {}", notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
             } catch (JoseException | ExecutionException | GeneralSecurityException | IOException |
                      InterruptedException e) {
