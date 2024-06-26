@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,8 +67,8 @@ public class PushNotificationService {
         String endpoint = (String) subscription.get("endpoint");
         Map<String, String> keys = (Map<String, String>) subscription.get("keys");
         String p256dh = keys.get("p256dh");
-        String auth = keys.get("auth");
-
+//        String auth = keys.get("auth");
+        String auth = Base64.getEncoder().encodeToString(((String) keys.get("auth")).getBytes());
         PushSubscriptionEntity sub = this.pushSubscriptionRepository.findByUserId(id)
                 .orElse(PushSubscriptionEntity.builder()
                         .build());
@@ -109,7 +110,7 @@ public class PushNotificationService {
                 String payloadString = objectMapper.writeValueAsString(payload);
                 Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.NORMAL);
                 HttpResponse response = this.pushService.send(notification);
-                log.info("Send push notification to user {} with status {}", notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
+                log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
             } catch (JoseException | ExecutionException | GeneralSecurityException | IOException |
                      InterruptedException e) {
