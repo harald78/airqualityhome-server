@@ -94,7 +94,10 @@ public class PushNotificationService {
                     .image("assets/icons/icon-192x192.png")
                     .silent(false)
                     .vibrate(new int[] {100, 50, 100})
-                    .data(Map.of("url", "https://app.airqualityhome.life/notifications/"))
+                    .data(Map.of("onActionClick",
+                            Map.of("default", Map.of("operation", "openWindow",
+                                    "open", Map.of("operation", "openWindow", "url", "/notifications"))
+                            ).toString()))
                     .actions(List.of(
                             PushNotificationAction.builder()
                                     .action("open")
