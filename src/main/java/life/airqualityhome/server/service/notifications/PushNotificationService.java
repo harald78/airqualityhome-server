@@ -13,6 +13,7 @@ import life.airqualityhome.server.service.SensorService;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
+import nl.martijndwars.webpush.Urgency;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
@@ -88,32 +89,24 @@ public class PushNotificationService {
         if (pushSubscriptionEntity.isPresent()) {
             var sub = pushSubscriptionEntity.get();
             var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
-            String payload = "{"
-                    + "\"title\": \"New Notification\","
-                    + "\"body\": \"Test!\","
-                    + "\"icon\": \"assets/icons/icon-192x192.png\","
-                    + "\"vibrate\": [100, 50, 100],"
-                    + "\"data\": {\"url\": \"https://app.airqualityhome.life\"},"
-                    + "\"actions\": [{\"action\": \"open_url\", \"title\": \"Zur App\"}]"
-                    + "}";
 
-//            var payload = PushNotificationPayload.builder()
-//                    .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
-//                    .body(notificationEntity.getMessage())
-//                    .icon("assets/icons/icon-192x192.png")
-//                    .vibrate(List.of(100, 50, 100))
-//                    .data(Map.of("url", "https://app.airqualityhome.life"))
-//                    .actions(List.of(
-//                            PushNotificationAction.builder()
-//                                    .action("open_url")
-//                                    .title("To App")
-//                                    .build())).build();
+            var payload = PushNotificationPayload.builder()
+                    .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
+                    .body(notificationEntity.getMessage())
+                    .icon("assets/icons/icon-192x192.png")
+                    .vibrate(List.of(100, 50, 100))
+                    .data(Map.of("url", "https://app.airqualityhome.life"))
+                    .actions(List.of(
+                            PushNotificationAction.builder()
+                                    .action("open_url")
+                                    .title("To App")
+                                    .build())).build();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
-//                String payloadString = objectMapper.writeValueAsString(payload);
-                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payload);
+                String payloadString = objectMapper.writeValueAsString(payload);
+                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.HIGH);
                 this.pushService.send(notification);
                 log.info("Send push notification to user {}", notificationEntity.getUserId());
 
