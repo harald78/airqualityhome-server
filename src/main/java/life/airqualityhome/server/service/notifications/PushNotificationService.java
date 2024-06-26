@@ -102,7 +102,7 @@ public class PushNotificationService {
                     ))
                     .actions(List.of(
                             PushNotificationAction.builder()
-                                    .action("explore")
+                                    .action("openWindow")
                                     .title("Open App")
                                     .build())).build();
 
