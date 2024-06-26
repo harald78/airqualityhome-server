@@ -16,8 +16,9 @@ public class PushNotificationPayload {
     String title;
     String body;
     String icon;
+    String image;
     boolean silent;
-    List<Integer> vibrate;
+    int[] vibrate;
     Map<String, String> data;
     List<PushNotificationAction> actions;
 }
