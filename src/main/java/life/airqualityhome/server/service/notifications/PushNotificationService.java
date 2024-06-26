@@ -97,7 +97,7 @@ public class PushNotificationService {
                     .data(Map.of("onActionClick",
                             Map.of("default", Map.of("operation", "openWindow",
                                     "open", Map.of("operation", "openWindow", "url", "/notifications"))
-                            ).toString()))
+                            )))
                     .actions(List.of(
                             PushNotificationAction.builder()
                                     .action("open")
