@@ -17,6 +17,7 @@ import nl.martijndwars.webpush.Subscription;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.h2.util.IntArray;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
 
@@ -90,21 +91,20 @@ public class PushNotificationService {
                     .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
                     .body(notificationEntity.getMessage())
                     .icon("assets/icons/icon-192x192.png")
+                    .image("assets/icons/icon-192x192.png")
                     .silent(false)
-                    .vibrate(List.of(100, 50, 100))
-                    .data(Map.of(
-                                "title", sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name(),
-                            "body", notificationEntity.getMessage(),
-                            "icon", "assets/icons/icon-192x192.png",
-                            "vibrate", List.of(100, 50, 100).toString(),
-                            "silent", "false",
-                            "url", "https://app.airqualityhome.life/notifications/"
-                    ))
+                    .vibrate(new int[] {100, 50, 100})
+                    .data(Map.of("url", "https://app.airqualityhome.life/notifications/"))
                     .actions(List.of(
                             PushNotificationAction.builder()
-                                    .action("openWindow")
+                                    .action("open")
                                     .title("Open App")
-                                    .build())).build();
+                                    .build(),
+                            PushNotificationAction.builder()
+                                    .action("ignore")
+                                    .title("Ignore")
+                                    .build()
+                            )).build();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
