@@ -95,9 +95,9 @@ public class PushNotificationService {
                     .silent(false)
                     .vibrate(new int[] {50, 100, 50})
                     .data(Map.of("onActionClick",
-                            Map.of("default", Map.of("operation", "openWindow", "url", "notifications",
+                            Map.of("default", Map.of("operation", "openWindow", "url", "notifications"),
                                     "open", Map.of("operation", "openWindow", "url", "notifications"))
-                            )))
+                            ))
                     .actions(List.of(
                             PushNotificationAction.builder()
                                     .action("open")
