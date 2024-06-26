@@ -107,7 +107,7 @@ public class PushNotificationService {
 
             try {
                 String payloadString = objectMapper.writeValueAsString(payload);
-                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.HIGH);
+                Notification notification = new Notification(sub.getEndpoint(), sub.getPublicKey(), sub.getAuth(), payloadString, Urgency.NORMAL);
                 HttpResponse response = this.pushService.send(notification);
                 log.info("Send push notification to user {} with status {}", notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
