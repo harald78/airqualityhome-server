@@ -90,12 +90,20 @@ public class PushNotificationService {
                     .title(sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name())
                     .body(notificationEntity.getMessage())
                     .icon("assets/icons/icon-192x192.png")
+                    .silent(false)
                     .vibrate(List.of(100, 50, 100))
-                    .data(Map.of("url", "https://app.airqualityhome.life"))
+                    .data(Map.of(
+                                "title", sensor.getLocation() + " - " + sensor.getSensorBaseSensorType().getSensorType().getType().name(),
+                            "body", notificationEntity.getMessage(),
+                            "icon", "assets/icons/icon-192x192.png",
+                            "vibrate", List.of(100, 50, 100).toString(),
+                            "silent", "false",
+                            "url", "https://app.airqualityhome.life/notifications/"
+                    ))
                     .actions(List.of(
                             PushNotificationAction.builder()
-                                    .action("open_url")
-                                    .title("To App")
+                                    .action("explore")
+                                    .title("Open App")
                                     .build())).build();
 
             ObjectMapper objectMapper = new ObjectMapper();
