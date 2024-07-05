@@ -1,0 +1,19 @@
+services:
+  mariadb:
+    image: 'mariadb:11.2'
+    environment:
+      - MARIADB_DATABASE=${mariaDB_database}
+      - MARIADB_PASSWORD=${mariaDB_user_password}
+      - MARIADB_ROOT_PASSWORD=${flyway_user_password}
+      - MARIADB_USER=${mariaDB_user}
+    ports:
+      - '3306:3306'
+    hostname: mariadb
+    networks:
+      - local
+    volumes:
+      - /var/lib/mariadb:/var/lib/mysql  # Mount the MariaDB data directory
+
+networks:
+  local:
+    driver: bridge

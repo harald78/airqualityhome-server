@@ -1,6 +1,6 @@
 package life.airqualityhome.server.config;
 
-import life.airqualityhome.server.service.UserDetailsServiceImpl;
+import life.airqualityhome.server.service.user.UserDetailsServiceImpl;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

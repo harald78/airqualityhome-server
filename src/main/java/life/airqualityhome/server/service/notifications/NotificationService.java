@@ -107,6 +107,7 @@ public class NotificationService {
             case H2 -> type +  " h2 " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case LPG -> type + " lpg " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case CO -> type + " co " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
+            case CO2 -> type + " co2 " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case ALCOHOL -> type + " alcohol " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case PROPANE -> type + " propane " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
             case PARTICLE -> type + " particle " + alarmValue + " ppm violated by " + formattedDiff + " ppm";
