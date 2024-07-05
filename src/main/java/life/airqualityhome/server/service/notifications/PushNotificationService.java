@@ -83,7 +83,7 @@ public class PushNotificationService {
                         this.sendNotification(sub, notificationEntity, mv);
 
                     } catch (InterruptedException e) {
-
+                        Thread.currentThread().interrupt();
                         throw new RuntimeException(e);
                     }
                 });
