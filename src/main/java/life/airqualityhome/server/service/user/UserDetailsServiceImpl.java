@@ -1,4 +1,4 @@
-package life.airqualityhome.server.service;
+package life.airqualityhome.server.service.user;
 
 
 import life.airqualityhome.server.helpers.CustomUserDetails;

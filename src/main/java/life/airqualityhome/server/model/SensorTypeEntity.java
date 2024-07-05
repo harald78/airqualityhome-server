@@ -19,7 +19,7 @@ public class SensorTypeEntity extends BaseEntity {
     private String name;
 
     public enum Type {
-        TEMPERATURE, HUMIDITY, PRESSURE, VOC, H2, LPG, CO, ALCOHOL, PROPANE, PARTICLE, LIGHT;
+        TEMPERATURE, HUMIDITY, PRESSURE, VOC, H2, LPG, CO, CO2, ALCOHOL, PROPANE, PARTICLE, LIGHT;
     }
 
     @Enumerated(EnumType.STRING)

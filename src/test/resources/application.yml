@@ -32,6 +32,8 @@ airqualityhome:
   sensor-api-token-header-name: X-API-TOKEN
   sensor-api-auth-token: TEST-TOKEN
   token-expire-millis: 300000 # 5 Minutes
+  vapid-private-key: "RJNfdp1Ee472u7QvCYdMTGQFuE_qD8qbQjO67CHRQMI" # NO PRODUCTION SECRET ONLY USED FOR TESTING
+  vapid-public-key: "BMHl7hdvujbimEDh3oKdAk7jlc-F1yS_fHf1p1aLzcD6SAAvOyOqzgPvD2IzXASR0nDCFWuNLHOIQfn5MV2Lg8E" # NO PRODUCTION SECRET ONLY USED FOR TESTING
 
 server:
   port: 8080

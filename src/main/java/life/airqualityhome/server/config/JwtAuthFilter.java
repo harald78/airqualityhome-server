@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import life.airqualityhome.server.service.UserDetailsServiceImpl;
+import life.airqualityhome.server.service.user.UserDetailsServiceImpl;
 import life.airqualityhome.server.service.jwt.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

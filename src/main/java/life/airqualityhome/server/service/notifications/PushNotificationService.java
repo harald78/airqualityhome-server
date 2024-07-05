@@ -78,13 +78,21 @@ public class PushNotificationService {
                 .findByUserId(notificationEntity.getUserId());
 
         if (!pushSubscriptions.isEmpty() && this.applicationProperties.isActivatePushNotifications()) {
-            pushSubscriptions.forEach(sub -> this.sendNotification(sub, notificationEntity, mv));
+                pushSubscriptions.forEach(sub -> {
+                    try {
+                        this.sendNotification(sub, notificationEntity, mv);
+
+                    } catch (InterruptedException e) {
+
+                        throw new RuntimeException(e);
+                    }
+                });
         } else {
             log.info("No push subscription found for user {}", notificationEntity.getUserId());
         }
     }
 
-    public void sendNotification(PushSubscriptionEntity sub, NotificationEntity notificationEntity, MeasurementViolationEntity mv) {
+    public void sendNotification(PushSubscriptionEntity sub, NotificationEntity notificationEntity, MeasurementViolationEntity mv) throws InterruptedException {
         var sensor = this.sensorService.getSensorEntityById(mv.getSensorId());
 
         var payload = PushNotificationPayload.builder()
@@ -124,8 +132,7 @@ public class PushNotificationService {
 
             log.info("Send push notification {} to user {} with status {}", payloadString, notificationEntity.getUserId(), response.getStatusLine().getStatusCode());
 
-        } catch (JoseException | ExecutionException | GeneralSecurityException | IOException |
-                 InterruptedException e) {
+        } catch (JoseException | ExecutionException | GeneralSecurityException | IOException e) {
             log.info("Error occurred, could not send push notification for notification {} reason {}", notificationEntity.getId(), e.getMessage());
         }
     }
