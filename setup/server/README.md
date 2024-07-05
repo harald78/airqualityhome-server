@@ -51,6 +51,13 @@ You can expose the variables with the following command:
 
 `source env_vars.sh`
 
+## Building the project and copy the app
+Before starting the server build the project from the root directory with the following command:
+`mvn clean package`
+
+Then copy the created jar-File from the target folder to the server:
+`scp ./target/airqualityhome-server-0.0.1-SNAPSHOT.jar <user>@<host>:/home/server/app.jar`
+
 ## Starting the server
 To start the database server please use the following command:
 `docker-compose -f compose.app.yaml up -d --build`
