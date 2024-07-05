@@ -1,5 +1,5 @@
 # Stage 1: Maven build
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk-focal
 RUN addgroup --system spring && adduser --system spring --ingroup spring
 USER spring:spring
 COPY app.jar app.jar
