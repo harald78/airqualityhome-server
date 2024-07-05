@@ -18,7 +18,6 @@ import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
